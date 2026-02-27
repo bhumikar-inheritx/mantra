@@ -1,0 +1,40 @@
+[
+    {
+        "id": "1",
+        "title": "Om Namah Shivaya",
+        "titleHindi": "ॐ नमः शिवाय",
+        "sanskritText": "ॐ नमः शिवाय",
+        "transliteration": "Om Namah Shivaya",
+        "translation": "I bow to Shiva",
+        "meaning": "Panchakshara Mantra representing the five elements and the inner self.",
+        "benefits": "Mental peace, clarity, and spiritual protection.",
+        "imageUrl": "assets/images/shiva.png",
+        "audioUrl": "assets/audio/shiv_mantra.mp3",
+        "category": "Protection",
+        "chakras": [
+            "Heart",
+            "Third Eye"
+        ],
+        "idealTime": "4:00 AM - 6:00 AM",
+        "recommendedCount": 108
+    },
+    {
+        "id": "2",
+        "title": "Gayatri Mantra",
+        "titleHindi": "गायत्री मंत्र",
+        "sanskritText": "ॐ भूर्भुवः स्वः",
+        "transliteration": "Om Bhur Bhuvah Svah",
+        "translation": "Universal prayer for enlightenment",
+        "meaning": "Vedic prayer for spiritual awakening and wisdom.",
+        "benefits": "Intellectual growth, radiance, and purity.",
+        "imageUrl": "assets/images/gayatri.png",
+        "audioUrl": "assets/audio/gayatri_mantra.mp3",
+        "category": "Wisdom",
+        "chakras": [
+            "Third Eye",
+            "Crown"
+        ],
+        "idealTime": "Sunrise",
+        "recommendedCount": 108
+    }
+]
