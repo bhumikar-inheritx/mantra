@@ -47,11 +47,13 @@ class AppColors {
   );
 
   // Chakra Colors
-  static const Color chakraRoot = Color(0xFFFF0000);
-  static const Color chakraSacral = Color(0xFFFF7F00);
-  static const Color chakraSolar = Color(0xFFE5B800); // Muted yellow for light bg
-  static const Color chakraHeart = Color(0xFF00A300); // Muted green
-  static const Color chakraThroat = Color(0xFF0088CC); // Muted blue
-  static const Color chakraThirdEye = Color(0xFF330066);
-  static const Color chakraCrown = Color(0xFF660099);
+  static const Color chakraRoot = Color(0xFFE74C3C);
+  static const Color chakraSacral = Color(0xFFE67E22);
+  static const Color chakraSolar = Color(0xFFF1C40F);
+  static const Color chakraHeart = Color(0xFF2ECC71);
+  static const Color chakraThroat = Color(0xFF3498DB);
+  static const Color chakraThirdEye = Color(0xFF9B59B6);
+  static const Color chakraCrown = Color(0xFF8E44AD);
+
+  // Static Helper Methods
 }

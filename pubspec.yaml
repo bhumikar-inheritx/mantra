@@ -36,16 +36,18 @@ dependencies:
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   intl: ^0.20.2
-  get_it: ^8.0.2
+  get_it: ^9.2.1
   logger: ^2.5.0
   equatable: ^2.0.7
   json_annotation: ^4.9.0
-  google_fonts: ^6.2.1
+  google_fonts: ^8.0.2
+  just_audio: ^0.9.42
+  audio_session: ^0.1.21
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   build_runner: ^2.4.15
   json_serializable: ^6.9.3
 

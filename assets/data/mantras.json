@@ -36,5 +36,186 @@
         ],
         "idealTime": "Sunrise",
         "recommendedCount": 108
+    },
+    {
+        "id": "3",
+        "title": "Ganesha Mantra",
+        "titleHindi": "ॐ गं गणपतये नमः",
+        "sanskritText": "ॐ गं गणपतये नमः",
+        "transliteration": "Om Gam Ganapataye Namaha",
+        "translation": "Salutations to the remover of obstacles",
+        "meaning": "Invocation to Lord Ganesha to remove all hurdles.",
+        "benefits": "Success in new ventures, wisdom, and prosperity.",
+        "imageUrl": "assets/images/ganesha.png",
+        "audioUrl": "assets/audio/ganesha_mantra.mp3",
+        "category": "Wealth",
+        "chakras": [
+            "Root"
+        ],
+        "idealTime": "Morning",
+        "recommendedCount": 108
+    },
+    {
+        "id": "4",
+        "title": "Lakshmi Mantra",
+        "titleHindi": "ॐ श्रीं महालक्ष्म्यै नमः",
+        "sanskritText": "ॐ श्रीं महालक्ष्म्यै नमः",
+        "transliteration": "Om Shreem Mahalakshmyai Namaha",
+        "translation": "Salutations to Goddess Lakshmi",
+        "meaning": "Mantra for attracting abundance and material prosperity.",
+        "benefits": "Wealth, beauty, and good fortune.",
+        "imageUrl": "assets/images/lakshmi.png",
+        "audioUrl": "assets/audio/lakshmi_mantra.mp3",
+        "category": "Wealth",
+        "chakras": [
+            "Solar Plexus"
+        ],
+        "idealTime": "Friday Morning",
+        "recommendedCount": 108
+    },
+    {
+        "id": "5",
+        "title": "Krishna Mahamantra",
+        "titleHindi": "हरे कृष्ण हरे कृष्ण",
+        "sanskritText": "हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे",
+        "transliteration": "Hare Krishna Hare Krishna Krishna Krishna Hare Hare",
+        "translation": "Calling upon the divine energy of Krishna",
+        "meaning": "The ultimate mantra for spiritual liberation and love.",
+        "benefits": "Inner joy, divine connection, and stress relief.",
+        "imageUrl": "assets/images/krishna.png",
+        "audioUrl": "assets/audio/krishna_mantra.mp3",
+        "category": "Harmony",
+        "chakras": [
+            "Heart"
+        ],
+        "idealTime": "Anytime",
+        "recommendedCount": 108
+    },
+    {
+        "id": "6",
+        "title": "Vishnu Mantra",
+        "titleHindi": "ॐ नमो भगवते वासुदेवाय",
+        "sanskritText": "ॐ नमो भगवते वासुदेवाय",
+        "transliteration": "Om Namo Bhagavate Vasudevaya",
+        "translation": "I bow to the Lord who lives in all hearts",
+        "meaning": "Mantra for liberation and seeking divine protection.",
+        "benefits": "Peace, preservation of life, and spiritual truth.",
+        "imageUrl": "assets/images/vishnu.png",
+        "audioUrl": "assets/audio/vishnu_mantra.mp3",
+        "category": "Peace",
+        "chakras": [
+            "Crown"
+        ],
+        "idealTime": "Evening",
+        "recommendedCount": 108
+    },
+    {
+        "id": "7",
+        "title": "Saraswati Mantra",
+        "titleHindi": "ॐ ऐं सरस्वत्यै नमः",
+        "sanskritText": "ॐ ऐं सरस्वत्यै नमः",
+        "transliteration": "Om Aim Sarasvatyai Namaha",
+        "translation": "Salutations to Goddess Saraswati",
+        "meaning": "Mantra for wisdom, arts, and focused learning.",
+        "benefits": "Focus, memory, and creative inspiration.",
+        "imageUrl": "assets/images/focus_cat.png",
+        "audioUrl": "",
+        "category": "Focus",
+        "chakras": [
+            "Third Eye"
+        ],
+        "idealTime": "Morning",
+        "recommendedCount": 108
+    },
+    {
+        "id": "8",
+        "title": "Hanuman Chalisa (Excerpt)",
+        "titleHindi": "जय हनुमान ज्ञान गुन सागर",
+        "sanskritText": "जय हनुमान ज्ञान गुन सागर",
+        "transliteration": "Jai Hanuman Gyan Gun Sagar",
+        "translation": "Victory to Hanuman, ocean of wisdom and virtue",
+        "meaning": "Prayer to Lord Hanuman for strength and courage.",
+        "benefits": "Confidence, career growth, and removal of fear.",
+        "imageUrl": "",
+        "audioUrl": "",
+        "category": "Career",
+        "chakras": [
+            "Root"
+        ],
+        "idealTime": "Tuesday Morning",
+        "recommendedCount": 11
+    },
+    {
+        "id": "9",
+        "title": "Radha Krishna Mantra",
+        "titleHindi": "ॐ रां रामाय नमः",
+        "sanskritText": "ॐ रां रामाय नमः",
+        "transliteration": "Om Ram Ramaya Namaha",
+        "translation": "Victory to Rama and Radha",
+        "meaning": "Mantra for divine love and relationship harmony.",
+        "benefits": "Healthy relationships, emotional balance, and love.",
+        "imageUrl": "assets/images/krishna.png",
+        "audioUrl": "",
+        "category": "Relationships",
+        "chakras": [
+            "Heart"
+        ],
+        "idealTime": "Evening",
+        "recommendedCount": 108
+    },
+    {
+        "id": "10",
+        "title": "Shanti Mantra",
+        "titleHindi": "ॐ शान्तिः शान्तिः शान्तिः",
+        "sanskritText": "ॐ शान्तिः शान्तिः शान्तिः",
+        "transliteration": "Om Shanti Shanti Shantihi",
+        "translation": "Om Peace, Peace, Peace",
+        "meaning": "Universal prayer for three types of peace.",
+        "benefits": "Stress relief, mental calm, and global harmony.",
+        "imageUrl": "assets/images/peace_cat.png",
+        "audioUrl": "",
+        "category": "Stress Relief",
+        "chakras": [
+            "Heart"
+        ],
+        "idealTime": "Anytime",
+        "recommendedCount": 21
+    },
+    {
+        "id": "11",
+        "title": "Maha Mrityunjaya Mantra",
+        "titleHindi": "ॐ त्र्यम्बकं यजामहे",
+        "sanskritText": "ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम्",
+        "transliteration": "Om Tryambakam Yajamahe",
+        "translation": "We worship the three-eyed Lord Shiva",
+        "meaning": "The great death-conquering mantra for longevity.",
+        "benefits": "Health, vitality, and protection from ailments.",
+        "imageUrl": "assets/images/shiva.png",
+        "audioUrl": "",
+        "category": "Health",
+        "chakras": [
+            "Crown",
+            "Heart"
+        ],
+        "idealTime": "Early Morning",
+        "recommendedCount": 108
+    },
+    {
+        "id": "12",
+        "title": "Om Mantra",
+        "titleHindi": "ॐ",
+        "sanskritText": "ॐ",
+        "transliteration": "Om",
+        "translation": "The primordial sound",
+        "meaning": "The vibration of the whole universe.",
+        "benefits": "Spiritual growth, focus, and connection to source.",
+        "imageUrl": "",
+        "audioUrl": "",
+        "category": "Spiritual Growth",
+        "chakras": [
+            "Crown"
+        ],
+        "idealTime": "Brahma Muhurta",
+        "recommendedCount": 108
     }
 ]

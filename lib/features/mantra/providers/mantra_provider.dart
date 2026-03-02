@@ -8,15 +8,23 @@ class MantraProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String _selectedCategory = 'All';
+  String _searchQuery = '';
 
   List<MantraModel> get mantras {
-    if (_selectedCategory == 'All') return _mantras;
-    return _mantras.where((m) => m.category == _selectedCategory).toList();
+    return _mantras.where((m) {
+      final matchesCategory = _selectedCategory == 'All' || m.category == _selectedCategory;
+      final matchesSearch = _searchQuery.isEmpty || 
+          m.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          m.titleHindi.contains(_searchQuery) ||
+          m.transliteration.toLowerCase().contains(_searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    }).toList();
   }
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String get selectedCategory => _selectedCategory;
+  String get searchQuery => _searchQuery;
 
   List<String> get categories {
     final cats = _mantras.map((m) => m.category).toSet().toList();
@@ -43,6 +51,11 @@ class MantraProvider extends ChangeNotifier {
 
   void setCategory(String category) {
     _selectedCategory = category;
+    notifyListeners();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
     notifyListeners();
   }
 }

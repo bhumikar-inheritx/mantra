@@ -1,32 +1,56 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../../data/models/insight_model.dart';
+import '../../../core/utils/insight_engine.dart';
 
 class DashboardProvider extends ChangeNotifier {
-  int _streak = 5; // Placeholder
-  int _totalChants = 1250; // Placeholder
-  String _dailyInsight = "Quiet the mind, and the soul will speak.";
-
-  final List<String> _insights = [
-    "Quiet the mind, and the soul will speak.",
-    "Your breath is the bridge between body and spirit.",
-    "Peace comes from within. Do not seek it without.",
-    "The mantra is not just words; it is a vibration of the universe.",
-    "Consistency in Sadhana is the key to transformation.",
-    "Every chant is a step towards your higher self.",
-  ];
+  int _streak = 5; 
+  int _totalChants = 1250;
+  
+  // History: "YYYY-MM-DD" -> count
+  final Map<String, int> _history = {
+    "2026-03-01": 108,
+    "2026-02-28": 216,
+    "2026-02-27": 108,
+    "2026-02-25": 108,
+    "2026-02-24": 324,
+  };
+  
+  SpiritualInsight _currentInsight = const SpiritualInsight(
+    title: "Inner Peace",
+    verse: "अशान्तस्य कुतः सुखम्।",
+    translation: "For one who is not peaceful, how can there be happiness?",
+    context: "Prioritize your inner stillness above all external goals.",
+  );
 
   int get streak => _streak;
   int get totalChants => _totalChants;
-  String get dailyInsight => _dailyInsight;
+  SpiritualInsight get dailyInsight => _currentInsight;
+  Map<String, int> get history => _history;
 
-  void refreshInsight() {
-    final random = Random();
-    _dailyInsight = _insights[random.nextInt(_insights.length)];
+  void refreshInsight(String? mood, String? goal, String? deity) {
+    _currentInsight = InsightEngine.getInsight(mood, goal, deity);
     notifyListeners();
   }
 
-  void incrementChants(int count) {
+  void addChantsForToday(int count) {
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    _history[today] = (_history[today] ?? 0) + count;
     _totalChants += count;
+    
+    // In a real app, logic for streak calculation would go here
     notifyListeners();
+  }
+
+  /// Returns activity for the last 30 days
+  List<int> getRecentActivity() {
+    final List<int> activity = [];
+    final now = DateTime.now();
+    for (int i = 29; i >= 0; i--) {
+      final date = now.subtract(Duration(days: i));
+      final dateStr = DateFormat('yyyy-MM-dd').format(date);
+      activity.add(_history[dateStr] ?? 0);
+    }
+    return activity;
   }
 }

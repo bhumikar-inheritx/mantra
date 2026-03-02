@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/onboarding_provider.dart';
+import '../../../shared/providers/audio_provider.dart';
+import 'main_navigation_screen.dart';
 import '../../../core/theme/app_colors.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -11,18 +14,20 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
-  int _currentPage = 0;
 
-  String? _selectedMood;
-  String? _selectedGoal;
-  String? _selectedDeity;
+  final Map<String, String> _deityAudioMap = {
+    'Shiv': 'assets/audio/shiv_mantra.mp3',
+    'Vishnu': 'assets/audio/vishnu_mantra.mp3',
+    'Ganesh': 'assets/audio/ganesha_mantra.mp3',
+    'Devi': 'assets/audio/lakshmi_mantra.mp3',
+    'Krishna': 'assets/audio/krishna_mantra.mp3',
+  };
 
-  final List<String> _moods = ['Stress', 'Fear', 'Confusion', 'Success', 'Gratitude'];
-  final List<String> _goals = ['Health', 'Money', 'Protection', 'Peace', 'Spiritual Growth'];
-  final List<String> _deities = ['Shiv', 'Vishnu', 'Ganesh', 'Devi', 'Krishna', 'None'];
-
-  void _nextPage() {
-    if (_currentPage < 2) {
+  void _nextPage(OnboardingProvider provider) {
+    // Stop audio when moving past selection page
+    context.read<AudioProvider>().stop();
+    
+    if (provider.currentPage < 2) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
@@ -33,109 +38,120 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _finishOnboarding() {
+    context.read<AudioProvider>().stop();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.sandalwoodWhite,
-      body: Column(
-        children: [
-          // Curved Image Header
-          Stack(
+    final audioProvider = Provider.of<AudioProvider>(context, listen: false);
+
+    return Consumer<OnboardingProvider>(
+      builder: (context, provider, child) {
+        return Scaffold(
+          backgroundColor: AppColors.sandalwoodWhite,
+          body: Column(
             children: [
-              ClipPath(
-                clipper: HeaderClipper(),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/shiv_image.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        AppColors.sandalwoodWhite.withValues(alpha: 0.8),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+              // Curved Image Header
+              Stack(
+                children: [
+                  ClipPath(
+                    clipper: HeaderClipper(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      width: double.infinity,
+                      child: Image.asset(
+                        'assets/images/shiv_image.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            AppColors.sandalwoodWhite.withValues(alpha: 0.8),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              _buildProgressIndicator(provider.currentPage),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: (int page) {
+                    provider.setCurrentPage(page);
+                  },
+                  children: [
+                    _buildSelectionPage(
+                      title: "How do you feel today?",
+                      options: provider.moods,
+                      selectedOption: provider.selectedMood,
+                      onSelect: (val) => provider.setSelectedMood(val),
+                    ),
+                    _buildSelectionPage(
+                      title: "What is your primary goal?",
+                      options: provider.goals,
+                      selectedOption: provider.selectedGoal,
+                      onSelect: (val) => provider.setSelectedGoal(val),
+                    ),
+                    _buildSelectionPage(
+                      title: "Preferred deity (Optional)",
+                      options: provider.deities,
+                      selectedOption: provider.selectedDeity,
+                      onSelect: (val) {
+                        provider.setSelectedDeity(val);
+                        final url = _deityAudioMap[val];
+                        if (url != null) {
+                          audioProvider.playMantra(url);
+                        } else {
+                          audioProvider.stop();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: provider.canGoNext() ? () => _nextPage(provider) : null,
+                        child: Text(provider.currentPage == 2 ? "GENERATE PATH" : "CONTINUE"),
+                      ),
+                    ),
+                    if (provider.currentPage == 2)
+                      TextButton(
+                        onPressed: _finishOnboarding,
+                        child: const Text("SKIP", style: TextStyle(color: AppColors.mistGrey)),
+                      ),
+                  ],
                 ),
               ),
             ],
           ),
-          _buildProgressIndicator(),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (int page) {
-                setState(() => _currentPage = page);
-              },
-              children: [
-                _buildSelectionPage(
-                  title: "How do you feel today?",
-                  options: _moods,
-                  selectedOption: _selectedMood,
-                  onSelect: (val) => setState(() => _selectedMood = val),
-                ),
-                _buildSelectionPage(
-                  title: "What is your primary goal?",
-                  options: _goals,
-                  selectedOption: _selectedGoal,
-                  onSelect: (val) => setState(() => _selectedGoal = val),
-                ),
-                _buildSelectionPage(
-                  title: "Preferred deity (Optional)",
-                  options: _deities,
-                  selectedOption: _selectedDeity,
-                  onSelect: (val) => setState(() => _selectedDeity = val),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _canGoNext() ? _nextPage : null,
-                    child: Text(_currentPage == 2 ? "GENERATE PATH" : "CONTINUE"),
-                  ),
-                ),
-                if (_currentPage == 2)
-                  TextButton(
-                    onPressed: _finishOnboarding,
-                    child: const Text("SKIP", style: TextStyle(color: AppColors.mistGrey)),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  bool _canGoNext() {
-    if (_currentPage == 0) return _selectedMood != null;
-    if (_currentPage == 1) return _selectedGoal != null;
-    return true;
-  }
 
-  Widget _buildProgressIndicator() {
+
+  Widget _buildProgressIndicator(int currentPage) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(3, (index) {
@@ -144,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           height: 4,
           margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: index <= _currentPage
+            color: index <= currentPage
                 ? AppColors.templeGold
                 : AppColors.templeGold.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(2),
