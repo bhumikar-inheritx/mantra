@@ -9,14 +9,25 @@
         "meaning": "Panchakshara Mantra representing the five elements and the inner self.",
         "benefits": "Mental peace, clarity, and spiritual protection.",
         "imageUrl": "assets/images/shiva.png",
-        "audioUrl": "assets/audio/shiv_mantra.mp3",
+        "audioUrl": "assets/audio/shiv_mantra/Om Namah Shivaya.mp3",
         "category": "Protection",
         "chakras": [
             "Heart",
             "Third Eye"
         ],
         "idealTime": "4:00 AM - 6:00 AM",
-        "recommendedCount": 108
+        "recommendedCount": 108,
+        "deity": "Shiva",
+        "zodiac": [
+            "Scorpio",
+            "Pisces"
+        ],
+        "planet": [
+            "Moon",
+            "Saturn"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
     },
     {
         "id": "2",
@@ -28,14 +39,24 @@
         "meaning": "Vedic prayer for spiritual awakening and wisdom.",
         "benefits": "Intellectual growth, radiance, and purity.",
         "imageUrl": "assets/images/gayatri.png",
-        "audioUrl": "assets/audio/gayatri_mantra.mp3",
+        "audioUrl": "assets/audio/gayatri_mantra/Gayatri Mantra.mp3",
         "category": "Wisdom",
         "chakras": [
             "Third Eye",
             "Crown"
         ],
         "idealTime": "Sunrise",
-        "recommendedCount": 108
+        "recommendedCount": 108,
+        "deity": "Gayatri",
+        "zodiac": [
+            "Aries",
+            "Leo"
+        ],
+        "planet": [
+            "Sun"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
     },
     {
         "id": "3",
@@ -47,13 +68,22 @@
         "meaning": "Invocation to Lord Ganesha to remove all hurdles.",
         "benefits": "Success in new ventures, wisdom, and prosperity.",
         "imageUrl": "assets/images/ganesha.png",
-        "audioUrl": "assets/audio/ganesha_mantra.mp3",
+        "audioUrl": "assets/audio/ganesha_mantra/Om Gam Ganapataye Namaha.mp3",
         "category": "Wealth",
         "chakras": [
             "Root"
         ],
         "idealTime": "Morning",
-        "recommendedCount": 108
+        "recommendedCount": 108,
+        "deity": "Ganesha",
+        "zodiac": [
+            "Capricorn"
+        ],
+        "planet": [
+            "Ketu"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
     },
     {
         "id": "4",
@@ -65,13 +95,23 @@
         "meaning": "Mantra for attracting abundance and material prosperity.",
         "benefits": "Wealth, beauty, and good fortune.",
         "imageUrl": "assets/images/lakshmi.png",
-        "audioUrl": "assets/audio/lakshmi_mantra.mp3",
+        "audioUrl": "assets/audio/lakshmi_mantra/Om Mahalaxmi Namo Namah.mp3",
         "category": "Wealth",
         "chakras": [
             "Solar Plexus"
         ],
         "idealTime": "Friday Morning",
-        "recommendedCount": 108
+        "recommendedCount": 108,
+        "deity": "Lakshmi",
+        "zodiac": [
+            "Taurus",
+            "Libra"
+        ],
+        "planet": [
+            "Venus"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
     },
     {
         "id": "5",
@@ -83,103 +123,23 @@
         "meaning": "The ultimate mantra for spiritual liberation and love.",
         "benefits": "Inner joy, divine connection, and stress relief.",
         "imageUrl": "assets/images/krishna.png",
-        "audioUrl": "assets/audio/krishna_mantra.mp3",
+        "audioUrl": "assets/audio/krishna_mantra/Om Krishnaya Vasudevaya.mp3",
         "category": "Harmony",
         "chakras": [
             "Heart"
         ],
         "idealTime": "Anytime",
-        "recommendedCount": 108
-    },
-    {
-        "id": "6",
-        "title": "Vishnu Mantra",
-        "titleHindi": "ॐ नमो भगवते वासुदेवाय",
-        "sanskritText": "ॐ नमो भगवते वासुदेवाय",
-        "transliteration": "Om Namo Bhagavate Vasudevaya",
-        "translation": "I bow to the Lord who lives in all hearts",
-        "meaning": "Mantra for liberation and seeking divine protection.",
-        "benefits": "Peace, preservation of life, and spiritual truth.",
-        "imageUrl": "assets/images/vishnu.png",
-        "audioUrl": "assets/audio/vishnu_mantra.mp3",
-        "category": "Peace",
-        "chakras": [
-            "Crown"
+        "recommendedCount": 108,
+        "deity": "Krishna",
+        "zodiac": [
+            "Gemini",
+            "Virgo"
         ],
-        "idealTime": "Evening",
-        "recommendedCount": 108
-    },
-    {
-        "id": "7",
-        "title": "Saraswati Mantra",
-        "titleHindi": "ॐ ऐं सरस्वत्यै नमः",
-        "sanskritText": "ॐ ऐं सरस्वत्यै नमः",
-        "transliteration": "Om Aim Sarasvatyai Namaha",
-        "translation": "Salutations to Goddess Saraswati",
-        "meaning": "Mantra for wisdom, arts, and focused learning.",
-        "benefits": "Focus, memory, and creative inspiration.",
-        "imageUrl": "assets/images/focus_cat.png",
-        "audioUrl": "",
-        "category": "Focus",
-        "chakras": [
-            "Third Eye"
+        "planet": [
+            "Mercury"
         ],
-        "idealTime": "Morning",
-        "recommendedCount": 108
-    },
-    {
-        "id": "8",
-        "title": "Hanuman Chalisa (Excerpt)",
-        "titleHindi": "जय हनुमान ज्ञान गुन सागर",
-        "sanskritText": "जय हनुमान ज्ञान गुन सागर",
-        "transliteration": "Jai Hanuman Gyan Gun Sagar",
-        "translation": "Victory to Hanuman, ocean of wisdom and virtue",
-        "meaning": "Prayer to Lord Hanuman for strength and courage.",
-        "benefits": "Confidence, career growth, and removal of fear.",
-        "imageUrl": "",
-        "audioUrl": "",
-        "category": "Career",
-        "chakras": [
-            "Root"
-        ],
-        "idealTime": "Tuesday Morning",
-        "recommendedCount": 11
-    },
-    {
-        "id": "9",
-        "title": "Radha Krishna Mantra",
-        "titleHindi": "ॐ रां रामाय नमः",
-        "sanskritText": "ॐ रां रामाय नमः",
-        "transliteration": "Om Ram Ramaya Namaha",
-        "translation": "Victory to Rama and Radha",
-        "meaning": "Mantra for divine love and relationship harmony.",
-        "benefits": "Healthy relationships, emotional balance, and love.",
-        "imageUrl": "assets/images/krishna.png",
-        "audioUrl": "",
-        "category": "Relationships",
-        "chakras": [
-            "Heart"
-        ],
-        "idealTime": "Evening",
-        "recommendedCount": 108
-    },
-    {
-        "id": "10",
-        "title": "Shanti Mantra",
-        "titleHindi": "ॐ शान्तिः शान्तिः शान्तिः",
-        "sanskritText": "ॐ शान्तिः शान्तिः शान्तिः",
-        "transliteration": "Om Shanti Shanti Shantihi",
-        "translation": "Om Peace, Peace, Peace",
-        "meaning": "Universal prayer for three types of peace.",
-        "benefits": "Stress relief, mental calm, and global harmony.",
-        "imageUrl": "assets/images/peace_cat.png",
-        "audioUrl": "",
-        "category": "Stress Relief",
-        "chakras": [
-            "Heart"
-        ],
-        "idealTime": "Anytime",
-        "recommendedCount": 21
+        "trackType": "Bhajan",
+        "usageType": "normal"
     },
     {
         "id": "11",
@@ -191,31 +151,79 @@
         "meaning": "The great death-conquering mantra for longevity.",
         "benefits": "Health, vitality, and protection from ailments.",
         "imageUrl": "assets/images/shiva.png",
-        "audioUrl": "",
+        "audioUrl": "assets/audio/shiv_mantra/Maha Mrityunjaya.mp3",
         "category": "Health",
         "chakras": [
             "Crown",
             "Heart"
         ],
         "idealTime": "Early Morning",
-        "recommendedCount": 108
+        "recommendedCount": 108,
+        "deity": "Shiva",
+        "zodiac": [
+            "Scorpio",
+            "Pisces"
+        ],
+        "planet": [
+            "Moon",
+            "Saturn"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
     },
     {
-        "id": "12",
-        "title": "Om Mantra",
-        "titleHindi": "ॐ",
-        "sanskritText": "ॐ",
-        "transliteration": "Om",
-        "translation": "The primordial sound",
-        "meaning": "The vibration of the whole universe.",
-        "benefits": "Spiritual growth, focus, and connection to source.",
-        "imageUrl": "",
-        "audioUrl": "",
-        "category": "Spiritual Growth",
+        "id": "13",
+        "title": "Vakratunda Mahakaya",
+        "titleHindi": "वक्रतुण्ड महाकाय",
+        "sanskritText": "वक्रतुण्ड महाकाय सूर्यकोटि समप्रभ",
+        "transliteration": "Vakratunda Mahakaya Suryakoti Samaprabha",
+        "translation": "Salutations to the curved-trunk Ganesha",
+        "meaning": "Prayer to Lord Ganesha to remove obstacles and bless with wisdom.",
+        "benefits": "Success, wisdom, and removal of obstacles.",
+        "imageUrl": "assets/images/ganesha.png",
+        "audioUrl": "assets/audio/ganesha_mantra/Vakratunda Mahakaya.mp3",
+        "category": "Wealth",
         "chakras": [
-            "Crown"
+            "Root"
         ],
-        "idealTime": "Brahma Muhurta",
-        "recommendedCount": 108
+        "idealTime": "Morning",
+        "recommendedCount": 108,
+        "deity": "Ganesha",
+        "zodiac": [
+            "Capricorn"
+        ],
+        "planet": [
+            "Ketu"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
+    },
+    {
+        "id": "14",
+        "title": "Kuber Ashtlakshmi",
+        "titleHindi": "कुबेर अष्टलक्ष्मी मंत्र",
+        "sanskritText": "ॐ ह्रीं श्रीं क्रीं श्रीं कुबेराय अष्ट-लक्ष्मी मम गृहे धनं पुरय पुरय नमः॥",
+        "transliteration": "Om Hreem Shreem Kreem Shreem Kuberaya Ashta-Lakshmi Mama Grahe Dhanam Puraya Puraya Namaha",
+        "translation": "Mantra for wealth and abundance",
+        "meaning": "Invocation to Lord Kuber and Goddess Lakshmi for prosperity.",
+        "benefits": "Wealth, abundance, and prosperity.",
+        "imageUrl": "assets/images/lakshmi.png",
+        "audioUrl": "assets/audio/lakshmi_mantra/Kuber ashtlakshmi.mp3",
+        "category": "Wealth",
+        "chakras": [
+            "Solar Plexus"
+        ],
+        "idealTime": "Friday Morning",
+        "recommendedCount": 108,
+        "deity": "Lakshmi",
+        "zodiac": [
+            "Taurus",
+            "Libra"
+        ],
+        "planet": [
+            "Venus"
+        ],
+        "trackType": "Mantra",
+        "usageType": "jaapSupported"
     }
 ]

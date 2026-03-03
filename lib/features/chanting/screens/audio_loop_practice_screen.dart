@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:deep_mantra/core/theme/app_colors.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/chanting_session_provider.dart';
+import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
 import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
+import 'practice_summary_screen.dart';
 
-class AudioChantScreen extends StatefulWidget {
-  const AudioChantScreen({super.key});
+class AudioLoopPracticeScreen extends StatefulWidget {
+  const AudioLoopPracticeScreen({super.key});
 
   @override
-  State<AudioChantScreen> createState() => _AudioChantScreenState();
+  State<AudioLoopPracticeScreen> createState() => _AudioLoopPracticeScreenState();
 }
 
-class _AudioChantScreenState extends State<AudioChantScreen> {
+class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final session = context.read<ChantingSessionProvider>();
+      final session = context.read<PracticeSessionProvider>();
       final audio = context.read<AudioChantProvider>();
       if (session.selectedMantra != null) {
         session.startSession();
@@ -32,7 +33,7 @@ class _AudioChantScreenState extends State<AudioChantScreen> {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
-    final session = Provider.of<ChantingSessionProvider>(context);
+    final session = Provider.of<PracticeSessionProvider>(context);
 
     return Scaffold(
       body: Container(
@@ -70,7 +71,7 @@ class _AudioChantScreenState extends State<AudioChantScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, ChantingSessionProvider session, MuhurtaProvider muhurta) {
+  Widget _buildHeader(BuildContext context, PracticeSessionProvider session, MuhurtaProvider muhurta) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Row(
@@ -107,7 +108,7 @@ class _AudioChantScreenState extends State<AudioChantScreen> {
   }
 
   void _showExitConfirmation(BuildContext context) {
-    final session = context.read<ChantingSessionProvider>();
+    final session = context.read<PracticeSessionProvider>();
     final audio = context.read<AudioChantProvider>();
 
     showDialog(
@@ -130,9 +131,25 @@ class _AudioChantScreenState extends State<AudioChantScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
               onPressed: () {
-                session.completeSession(context, audio.currentCount);
-                Navigator.pop(dialogContext);
-                Navigator.pop(context);
+                final finalCount = audio.currentCount;
+                final duration = session.sessionDuration;
+                final mantraTitle = session.selectedMantra?.title ?? "Mantra";
+                
+                // Stop audio
+                audio.stop();
+                
+                Navigator.pop(dialogContext); // Close dialog
+                
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PracticeSummaryScreen(
+                      finalCount: finalCount,
+                      duration: duration,
+                      mantraTitle: mantraTitle,
+                    ),
+                  ),
+                );
               },
               child: Text("FINISH", style: TextStyle(color: m.onAccentColor, fontWeight: FontWeight.bold)),
             ),
@@ -145,36 +162,82 @@ class _AudioChantScreenState extends State<AudioChantScreen> {
   Widget _buildProgressCircle(MuhurtaProvider muhurta) {
     return Consumer<AudioChantProvider>(
       builder: (context, audio, child) {
+        final bool isJustListen = audio.targetCount <= 0;
+        final totalProgress = !isJustListen && audio.targetCount > 0 
+            ? (audio.currentCount - 1 + audio.progressPercentage) / audio.targetCount 
+            : 0.0;
+
         return Stack(
           alignment: Alignment.center,
           children: [
+            // Background Glow
+            Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: muhurta.accentColor.withValues(alpha: 0.15),
+                    blurRadius: 40,
+                    spreadRadius: 10,
+                  ),
+                ],
+              ),
+            ),
+            // Outer Ring (Total Progress)
+            if (!isJustListen)
+              SizedBox(
+                width: 260,
+                height: 260,
+                child: CircularProgressIndicator(
+                  value: totalProgress.clamp(0.0, 1.0),
+                  strokeWidth: 4,
+                  backgroundColor: Colors.white.withValues(alpha: 0.05),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    muhurta.accentColor.withValues(alpha: 0.3),
+                  ),
+                ),
+              ),
+            // Inner Ring (Current Repetition Progress)
             SizedBox(
-              width: 250,
-              height: 250,
+              width: 230,
+              height: 230,
               child: CircularProgressIndicator(
                 value: audio.progressPercentage,
-                strokeWidth: 8,
+                strokeWidth: 12,
+                strokeCap: StrokeCap.round,
                 backgroundColor: Colors.white.withValues(alpha: 0.1),
                 valueColor: AlwaysStoppedAnimation<Color>(muhurta.accentColor),
               ),
             ),
+            // Counter Text
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "${audio.currentCount}",
+                  isJustListen ? "∞" : "${audio.currentCount}",
                   style: TextStyle(
                     color: muhurta.primaryTextColor,
-                    fontSize: 64,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 72,
+                    fontWeight: FontWeight.w200, // Thinner, more elegant
+                    fontFamily: 'serif',
                   ),
                 ),
-                Text(
-                  "OF ${audio.targetCount}",
-                  style: TextStyle(
-                    color: muhurta.secondaryTextColor,
-                    fontSize: 14,
-                    letterSpacing: 1,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: muhurta.accentColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    isJustListen ? "CONTINUOUS" : "OF ${audio.targetCount}",
+                    style: TextStyle(
+                      color: muhurta.accentColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                    ),
                   ),
                 ),
               ],

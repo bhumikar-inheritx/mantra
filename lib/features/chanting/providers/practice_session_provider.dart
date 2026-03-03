@@ -5,7 +5,7 @@ import '../../../data/models/mantra_model.dart';
 import '../../dashboard/providers/dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
-class ChantingSessionProvider extends ChangeNotifier {
+class PracticeSessionProvider extends ChangeNotifier {
   MantraModel? _selectedMantra;
   int _targetCount = 108;
   String? _selectedSankalp;

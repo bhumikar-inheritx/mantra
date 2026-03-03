@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:deep_mantra/core/theme/app_colors.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/chanting_session_provider.dart';
+import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
 import 'package:deep_mantra/features/chanting/providers/manual_japa_provider.dart';
+import 'practice_summary_screen.dart';
 import '../widgets/digital_mala_widget.dart';
 import '../widgets/chakra_widget.dart';
 
@@ -19,7 +21,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final session = context.read<ChantingSessionProvider>();
+      final session = context.read<PracticeSessionProvider>();
       final manual = context.read<ManualJapaProvider>();
       session.startSession();
       manual.initialize(session.targetCount);
@@ -29,7 +31,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
-    final session = Provider.of<ChantingSessionProvider>(context);
+    final session = Provider.of<PracticeSessionProvider>(context);
     final manual = Provider.of<ManualJapaProvider>(context);
     final mantra = session.selectedMantra;
 
@@ -99,13 +101,45 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
 
               const Spacer(),
 
-              // Digital Mala (Circular)
-              GestureDetector(
-                onTap: () => manual.incrementCount(),
-                child: DigitalMalaWidget(
-                  currentCount: manual.currentCount,
-                  targetCount: manual.targetCount,
-                ),
+              // DigitalMala (Circular)
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.vibrate();
+                      manual.incrementCount();
+                    },
+                    child: DigitalMalaWidget(
+                      currentCount: manual.currentCount,
+                      targetCount: manual.targetCount,
+                    ),
+                  ),
+                  IgnorePointer(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "TAP",
+                          style: TextStyle(
+                            color: muhurta.secondaryTextColor.withValues(alpha: 0.5),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        Text(
+                          "TO COUNT",
+                          style: TextStyle(
+                            color: muhurta.secondaryTextColor.withValues(alpha: 0.5),
+                            fontSize: 10,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
 
               const Spacer(),
@@ -134,16 +168,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
 
               const SizedBox(height: 40),
               
-              Text(
-                "TAP ON MALA TO COUNT",
-                style: TextStyle(
-                  color: muhurta.secondaryTextColor,
-                  fontSize: 10,
-                  letterSpacing: 1.2,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24),
+               const SizedBox(height: 24),
             ],
           ),
         ),
@@ -205,7 +230,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
   }
 
   void _showExitConfirmation(BuildContext context) {
-    final session = context.read<ChantingSessionProvider>();
+    final session = context.read<PracticeSessionProvider>();
     final manual = context.read<ManualJapaProvider>();
 
     showDialog(
@@ -228,9 +253,22 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
               onPressed: () {
-                session.completeSession(context, manual.currentCount);
-                Navigator.pop(dialogContext);
-                Navigator.pop(context);
+                final finalCount = manual.currentCount;
+                final duration = session.sessionDuration;
+                final mantraTitle = session.selectedMantra?.title ?? "Mantra";
+                
+                Navigator.pop(dialogContext); // Close dialog
+                
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PracticeSummaryScreen(
+                      finalCount: finalCount,
+                      duration: duration,
+                      mantraTitle: mantraTitle,
+                    ),
+                  ),
+                );
               },
               child: Text("FINISH", style: TextStyle(color: m.onAccentColor, fontWeight: FontWeight.bold)),
             ),

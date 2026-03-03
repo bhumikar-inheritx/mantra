@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
-import '../../../shared/providers/audio_provider.dart';
+import '../../../shared/providers/media_player_provider.dart';
+import '../../chanting/providers/audio_chant_provider.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 
 class DeepMantraMiniPlayer extends StatelessWidget {
@@ -12,12 +13,14 @@ class DeepMantraMiniPlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final audioProvider = Provider.of<AudioProvider>(context);
+    final mediaProvider = Provider.of<MediaPlayerProvider>(context);
+    final chantProvider = Provider.of<AudioChantProvider>(context);
     final muhurta = Provider.of<MuhurtaProvider>(context);
 
-    // Only show if audio is playing or has a valid source
-    if (!audioProvider.isPlaying &&
-        audioProvider.player.processingState == ProcessingState.idle) {
+    final bool isPracticing = chantProvider.isPlaying || chantProvider.currentCount > 0;
+    final bool isListening = mediaProvider.isPlaying || mediaProvider.currentTrack != null;
+
+    if (!isPracticing && !isListening) {
       return const SizedBox.shrink();
     }
 
@@ -79,9 +82,9 @@ class DeepMantraMiniPlayer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "SACRED MANTRA",
-                        style: TextStyle(
+                      Text(
+                        isPracticing ? "PRACTICE" : "LISTENING",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -89,15 +92,15 @@ class DeepMantraMiniPlayer extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        audioProvider.currentMode == AudioMode.listen
-                            ? "Listening: ${audioProvider.currentLoopCount}/${audioProvider.targetLoopCount}"
-                            : "Manual Practice",
+                        isPracticing
+                            ? "Count: ${chantProvider.currentCount}/${chantProvider.targetCount}"
+                            : (mediaProvider.currentTrack?.title ?? "Sacred Melody"),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 10,
                         ),
                       ),
-                    ],
+                   ],
                   ),
                 ),
 
@@ -106,10 +109,12 @@ class DeepMantraMiniPlayer extends StatelessWidget {
                   width: 32,
                   height: 32,
                   child: CircularProgressIndicator(
-                    value:
-                        audioProvider.player.position.inMilliseconds /
-                        (audioProvider.player.duration?.inMilliseconds ?? 1),
-                    strokeWidth: 2,
+                    value: isPracticing 
+                        ? (chantProvider.targetCount > 0 ? chantProvider.currentCount / chantProvider.targetCount : 0.0)
+                        : (mediaProvider.player.duration?.inMilliseconds ?? 0) > 0 
+                          ? mediaProvider.player.position.inMilliseconds / mediaProvider.player.duration!.inMilliseconds 
+                          : 0.0,
+                   strokeWidth: 2,
                     backgroundColor: Colors.white10,
                     valueColor: AlwaysStoppedAnimation<Color>(
                       muhurta.accentColor,
@@ -120,7 +125,7 @@ class DeepMantraMiniPlayer extends StatelessWidget {
 
                 // Play/Pause Control
                 GestureDetector(
-                  onTap: () => audioProvider.togglePlay(),
+                  onTap: () => isPracticing ? chantProvider.togglePlay() : mediaProvider.togglePlay(),
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -128,7 +133,9 @@ class DeepMantraMiniPlayer extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      audioProvider.isPlaying ? Icons.pause : Icons.play_arrow,
+                      (isPracticing ? chantProvider.isPlaying : mediaProvider.isPlaying) 
+                          ? Icons.pause 
+                          : Icons.play_arrow,
                       color: Colors.black,
                       size: 20,
                     ),
@@ -142,9 +149,9 @@ class DeepMantraMiniPlayer extends StatelessWidget {
                     color: Colors.white54,
                     size: 18,
                   ),
-                  onPressed: () => audioProvider.stop(),
+                  onPressed: () => isPracticing ? chantProvider.stop() : mediaProvider.stop(),
                 ),
-              ],
+             ],
             ),
           ),
         ),

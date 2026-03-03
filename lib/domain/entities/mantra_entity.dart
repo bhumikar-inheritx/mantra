@@ -15,6 +15,11 @@ class MantraEntity extends Equatable {
   final List<String> chakras;
   final String idealTime;
   final int recommendedCount;
+  final String deity;
+  final List<String> zodiac;
+  final List<String> planet;
+  final String trackType; // 'Mantra', 'Bhajan', 'Stotram', 'Verses'
+  final String usageType; // 'normal', 'jaapSupported'
 
   const MantraEntity({
     required this.id,
@@ -31,6 +36,11 @@ class MantraEntity extends Equatable {
     required this.chakras,
     required this.idealTime,
     required this.recommendedCount,
+    required this.deity,
+    required this.zodiac,
+    required this.planet,
+    required this.trackType,
+    required this.usageType,
   });
 
   @override
@@ -39,5 +49,10 @@ class MantraEntity extends Equatable {
         title,
         titleHindi,
         category,
+        deity,
+        zodiac,
+        planet,
+        trackType,
+        usageType,
       ];
 }

@@ -6,7 +6,15 @@ class AudioPlayerService {
   AudioPlayer get player => _player;
 
   Future<void> setSource(String url) async {
-    await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+    if (url.startsWith('assets/')) {
+      await _player.setAudioSource(AudioSource.asset(url));
+    } else {
+      await _player.setAudioSource(AudioSource.uri(Uri.parse(url)));
+    }
+  }
+
+  Future<void> setAudioSource(AudioSource source) async {
+    await _player.setAudioSource(source);
   }
 
   Future<void> play() async {

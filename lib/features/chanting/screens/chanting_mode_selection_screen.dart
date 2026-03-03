@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import '../../../data/models/mantra_model.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../models/chanting_session_model.dart';
-import '../providers/chanting_session_provider.dart';
+import '../providers/practice_session_provider.dart';
 import '../providers/manual_japa_provider.dart';
-import 'audio_chant_screen.dart';
+import 'audio_loop_practice_screen.dart';
 import 'manual_japa_screen.dart';
 
 class ChantingModeSelectionScreen extends StatelessWidget {
@@ -17,7 +17,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
-    final sessionProvider = Provider.of<ChantingSessionProvider>(
+    final sessionProvider = Provider.of<PracticeSessionProvider>(
       context,
       listen: false,
     );
@@ -69,7 +69,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const AudioChantScreen(),
+                        builder: (_) => const AudioLoopPracticeScreen(),
                       ),
                     );
                   },

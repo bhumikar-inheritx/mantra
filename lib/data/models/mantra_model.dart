@@ -16,6 +16,11 @@ class MantraModel extends MantraEntity {
     required List<String> chakras,
     required String idealTime,
     required int recommendedCount,
+    required String deity,
+    required List<String> zodiac,
+    required List<String> planet,
+    required String trackType,
+    required String usageType,
   }) : super(
           id: id,
           title: title,
@@ -31,6 +36,11 @@ class MantraModel extends MantraEntity {
           chakras: chakras,
           idealTime: idealTime,
           recommendedCount: recommendedCount,
+          deity: deity,
+          zodiac: zodiac,
+          planet: planet,
+          trackType: trackType,
+          usageType: usageType,
         );
 
   factory MantraModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +59,11 @@ class MantraModel extends MantraEntity {
       chakras: List<String>.from(json['chakras'] ?? []),
       idealTime: json['idealTime'] ?? '',
       recommendedCount: json['recommendedCount'] ?? 108,
+      deity: json['deity'] ?? 'Universal',
+      zodiac: List<String>.from(json['zodiac'] ?? []),
+      planet: List<String>.from(json['planet'] ?? []),
+      trackType: json['trackType'] ?? 'Mantra',
+      usageType: json['usageType'] ?? 'jaapSupported',
     );
   }
 
@@ -68,6 +83,11 @@ class MantraModel extends MantraEntity {
       'chakras': chakras,
       'idealTime': idealTime,
       'recommendedCount': recommendedCount,
+      'deity': deity,
+      'zodiac': zodiac,
+      'planet': planet,
+      'trackType': trackType,
+      'usageType': usageType,
     };
   }
 }

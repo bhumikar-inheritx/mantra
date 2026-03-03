@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/onboarding_provider.dart';
-import '../../../shared/providers/audio_provider.dart';
+import '../../../shared/providers/media_player_provider.dart';
 import 'main_navigation_screen.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -25,7 +25,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _nextPage(OnboardingProvider provider) {
     // Stop audio when moving past selection page
-    context.read<AudioProvider>().stop();
+    context.read<MediaPlayerProvider>().stop();
     
     if (provider.currentPage < 2) {
       _pageController.nextPage(
@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _finishOnboarding() {
-    context.read<AudioProvider>().stop();
+    context.read<MediaPlayerProvider>().stop();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const MainNavigationScreen()),
@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final audioProvider = Provider.of<AudioProvider>(context, listen: false);
+    final mediaProvider = Provider.of<MediaPlayerProvider>(context, listen: false);
 
     return Consumer<OnboardingProvider>(
       builder: (context, provider, child) {
@@ -114,9 +114,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         provider.setSelectedDeity(val);
                         final url = _deityAudioMap[val];
                         if (url != null) {
-                          audioProvider.playMantra(url);
+                          mediaProvider.playUrl(url);
                         } else {
-                          audioProvider.stop();
+                          mediaProvider.stop();
                         }
                       },
                     ),
