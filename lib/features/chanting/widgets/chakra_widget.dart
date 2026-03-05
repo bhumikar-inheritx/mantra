@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 
 class ChakraWidget extends StatefulWidget {
@@ -61,27 +63,27 @@ class _ChakraWidgetState extends State<ChakraWidget> with SingleTickerProviderSt
       animation: _glowAnimation,
       builder: (context, child) {
         return Container(
-          width: 80,
-          height: 80,
+          width: 80.w,
+          height: 80.w,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
                 color: color.withValues(alpha: 0.5 * _glowAnimation.value),
-                blurRadius: 20 * _glowAnimation.value,
-                spreadRadius: 5 * _glowAnimation.value,
+                blurRadius: 20.r * _glowAnimation.value,
+                spreadRadius: 5.r * _glowAnimation.value,
               ),
             ],
             border: Border.all(
               color: color.withValues(alpha: 0.8),
-              width: 2,
+              width: 2.w,
             ),
           ),
           child: Center(
             child: Icon(
               Icons.brightness_7,
               color: color,
-              size: 40,
+              size: 40.w,
             ),
           ),
         );

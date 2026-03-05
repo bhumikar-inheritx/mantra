@@ -9,6 +9,12 @@ class AppColors {
   static const Color sacredMarigold = Color(0xFFFFBF00);
   static const Color earthyGrey = Color(0xFF795548);
   static const Color sacredRed = Color(0xFFC0392B);
+  
+  // Cosmic Spirituality Palette (New Logo matching)
+  static const Color cosmicDeep = Color(0xFF0D0115);
+  static const Color cosmicPurple = Color(0xFF1A0A26);
+  static const Color cosmicViolet = Color(0xFF2E1A47);
+  static const Color luxuryGold = Color(0xFFD4AF37);
 
   // Background and Surfaces
   static const Color bgDark = sandalwoodWhite; // For light theme, using white as primary bg
@@ -44,6 +50,12 @@ class AppColors {
     colors: [Colors.transparent, Color(0x883E2723)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
+  );
+  
+  static const RadialGradient cosmicRadial = RadialGradient(
+    colors: [cosmicViolet, cosmicPurple, cosmicDeep],
+    center: Alignment.center,
+    radius: 1.5,
   );
 
   // Chakra Colors

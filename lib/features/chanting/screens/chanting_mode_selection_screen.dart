@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../core/theme/app_sizes.dart';
 
 import '../../../data/models/mantra_model.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../models/chanting_session_model.dart';
 import '../providers/practice_session_provider.dart';
 import '../providers/manual_japa_provider.dart';
+import '../../dashboard/providers/mini_player_provider.dart';
 import 'audio_loop_practice_screen.dart';
 import 'manual_japa_screen.dart';
+import 'practice_summary_screen.dart';
 
 class ChantingModeSelectionScreen extends StatelessWidget {
   final MantraModel mantra;
@@ -22,6 +27,13 @@ class ChantingModeSelectionScreen extends StatelessWidget {
       listen: false,
     );
 
+    // Reset offset for standalone screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
+      }
+    });
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -34,28 +46,28 @@ class ChantingModeSelectionScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 48),
+                SizedBox(height: 48.h),
                 Text(
                   "Choose Your Path",
                   style: TextStyle(
                     color: muhurta.primaryTextColor,
-                    fontSize: 32,
+                    fontSize: AppSizes.fontHeading1,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   "How would you like to practice today?",
                   style: TextStyle(
                     color: muhurta.secondaryTextColor,
-                    fontSize: 16,
+                    fontSize: AppSizes.fontBody,
                   ),
                 ),
-                const SizedBox(height: 64),
+                SizedBox(height: 64.h),
 
                 _buildModeCard(
                   context,
@@ -75,7 +87,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                   },
                 ),
 
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
                 _buildModeCard(
                   context,
@@ -102,10 +114,10 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                 const Spacer(),
 
                 IconButton(
-                  icon: Icon(Icons.close, color: muhurta.secondaryTextColor),
+                  icon: Icon(Icons.close, color: muhurta.secondaryTextColor, size: AppSizes.iconMd),
                   onPressed: () => Navigator.pop(context),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
               ],
             ),
           ),
@@ -126,28 +138,28 @@ class ChantingModeSelectionScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(AppSizes.paddingLg),
         decoration: BoxDecoration(
           color: (muhurta.isDarkPhase ? Colors.white : Colors.black).withValues(
             alpha: 0.05,
           ),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(
             color: muhurta.accentColor.withValues(alpha: 0.2),
-            width: 1.5,
+            width: 1.5.w,
           ),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(AppSizes.paddingMd),
               decoration: BoxDecoration(
                 color: muhurta.accentColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: muhurta.accentColor, size: 32),
+              child: Icon(icon, color: muhurta.accentColor, size: AppSizes.iconLg),
             ),
-            const SizedBox(width: 20),
+            SizedBox(width: 20.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,16 +168,16 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                     title,
                     style: TextStyle(
                       color: muhurta.primaryTextColor,
-                      fontSize: 18,
+                      fontSize: AppSizes.fontTitle,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Text(
                     description,
                     style: TextStyle(
                       color: muhurta.secondaryTextColor,
-                      fontSize: 14,
+                      fontSize: AppSizes.fontSm,
                     ),
                   ),
                 ],

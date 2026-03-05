@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
@@ -20,48 +21,48 @@ class AppTheme {
       ),
 
       textTheme: GoogleFonts.outfitTextTheme(
-        const TextTheme(
+        TextTheme(
           displayLarge: TextStyle(
             color: AppColors.ancientBrown,
-            fontSize: 32,
+            fontSize: 32.sp,
             fontWeight: FontWeight.bold,
             letterSpacing: -0.5,
           ),
           displayMedium: TextStyle(
             color: AppColors.ancientBrown,
-            fontSize: 24,
+            fontSize: 24.sp,
             fontWeight: FontWeight.w600,
           ),
           titleLarge: TextStyle(
             color: AppColors.ancientBrown,
-            fontSize: 20,
+            fontSize: 20.sp,
             fontWeight: FontWeight.bold,
           ),
           bodyLarge: TextStyle(
             color: AppColors.ancientBrown,
-            fontSize: 16,
+            fontSize: 16.sp,
             height: 1.5,
           ),
           bodyMedium: TextStyle(
             color: AppColors.earthyGrey,
-            fontSize: 14,
+            fontSize: 14.sp,
             height: 1.4,
           ),
           bodySmall: TextStyle(
             color: AppColors.earthyGrey,
-            fontSize: 12,
+            fontSize: 12.sp,
           ),
         ),
       ),
 
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.sandalwoodWhite,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: AppColors.ancientBrown),
+        iconTheme: const IconThemeData(color: AppColors.ancientBrown),
         titleTextStyle: TextStyle(
           color: AppColors.ancientBrown,
-          fontSize: 20,
+          fontSize: 20.sp,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -72,9 +73,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           textStyle: const TextStyle(fontWeight: FontWeight.bold),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.r),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
           elevation: 2,
         ),
       ),
@@ -84,14 +85,14 @@ class AppTheme {
         elevation: 4,
         shadowColor: AppColors.ancientBrown.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           side: BorderSide(color: AppColors.templeSaffron.withValues(alpha: 0.1)),
         ),
       ),
 
       dividerTheme: DividerThemeData(
         color: AppColors.ancientBrown.withValues(alpha: 0.1),
-        thickness: 1,
+        thickness: 1.h,
       ),
     );
   }

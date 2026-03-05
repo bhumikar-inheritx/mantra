@@ -1,12 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'home_screen.dart';
 import 'package:deep_mantra/features/mantra/screens/browse_perspective_screen.dart';
-import 'sadhana_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../../../core/theme/app_sizes.dart';
+import '../../../shared/providers/muhurta_provider.dart';
+import '../providers/mini_player_provider.dart';
+import 'home_screen.dart';
 import 'practice_tab_screen.dart';
 import 'profile_screen.dart';
-import '../widgets/mini_player_widget.dart';
-import '../../../shared/providers/muhurta_provider.dart';
+import 'sadhana_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -27,28 +30,45 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    // Set initial offset for navigation screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MiniPlayerProvider>().setBottomOffset(
+        AppSizes.bottomNavBarHeight,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    // Reset offset when leaving navigation screen (though it's usually the root)
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final totalOffset = AppSizes.bottomNavBarHeight + bottomPadding;
+
+    // Use addPostFrameCallback to avoid notifyListeners() during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<MiniPlayerProvider>().setBottomOffset(totalOffset);
+      }
+    });
+
     return Consumer<MuhurtaProvider>(
       builder: (context, muhurta, child) {
         return Scaffold(
-          body: Stack(
-            children: [
-              _screens[_selectedIndex],
-              const Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: DeepMantraMiniPlayer(),
-              ),
-            ],
-          ),
+          body: _screens[_selectedIndex],
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, -5),
+                  blurRadius: 20.r,
+                  offset: Offset(0, -5.h),
                 ),
               ],
             ),
@@ -59,13 +79,21 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                   _selectedIndex = index;
                 });
               },
-              backgroundColor: muhurta.isDarkPhase ? const Color(0xFF121212) : Colors.white,
+              backgroundColor: muhurta.isDarkPhase
+                  ? const Color(0xFF121212)
+                  : Colors.white,
               selectedItemColor: muhurta.accentColor,
-              unselectedItemColor: muhurta.secondaryTextColor.withValues(alpha: 0.5),
+              unselectedItemColor: muhurta.secondaryTextColor.withValues(
+                alpha: 0.5,
+              ),
               showUnselectedLabels: true,
               type: BottomNavigationBarType.fixed,
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-              unselectedLabelStyle: const TextStyle(fontSize: 12),
+              selectedLabelStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: AppSizes.fontSm,
+              ),
+              unselectedLabelStyle: TextStyle(fontSize: AppSizes.fontSm),
+              iconSize: AppSizes.iconMd,
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.home_outlined),

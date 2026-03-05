@@ -1,6 +1,12 @@
+import 'package:deep_mantra/features/dashboard/providers/mini_player_provider.dart';
+import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
+import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
+import 'package:deep_mantra/shared/providers/audio_player_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:deep_mantra/features/mantra/providers/mantra_provider.dart';
 import 'mantra_list_screen.dart';
@@ -70,7 +76,7 @@ class BrowsePerspectiveScreen extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             slivers: [
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                padding: EdgeInsets.fromLTRB(AppSizes.paddingLg, AppSizes.paddingLg, AppSizes.paddingLg, 32.h),
                 sliver: SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,16 +85,16 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                         "Sacred Library",
                         style: GoogleFonts.playfairDisplay(
                           color: muhurta.primaryTextColor,
-                          fontSize: 40,
+                          fontSize: 40.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text(
                         "CHOOSE YOUR PERSPECTIVE",
                         style: TextStyle(
                           color: muhurta.accentColor,
-                          fontSize: 12,
+                          fontSize: AppSizes.fontXs,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 2,
                         ),
@@ -98,12 +104,12 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
                 sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisSpacing: 20,
-                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20.h,
+                    crossAxisSpacing: 20.w,
                     childAspectRatio: 0.85,
                   ),
                   delegate: SliverChildBuilderDelegate(
@@ -115,7 +121,15 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              Consumer3<AudioPlayerProvider, AudioChantProvider, PracticeSessionProvider>(
+                builder: (context, audio, chant, practice, _) {
+                  final miniPlayer = context.read<MiniPlayerProvider>();
+                  final show = miniPlayer.showMiniPlayer(audio, chant, practice);
+                  return SliverToBoxAdapter(
+                    child: SizedBox(height: show ? MiniPlayerProvider.height + 40.h : 40.h),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -137,7 +151,7 @@ class BrowsePerspectiveScreen extends StatelessWidget {
       duration: Duration(milliseconds: 600 + (index * 100)),
       builder: (context, value, child) {
         return Transform.translate(
-          offset: Offset(0, 50 * (1 - value)),
+          offset: Offset(0, 50.h * (1 - value)),
           child: Opacity(
             opacity: value,
             child: child,
@@ -161,18 +175,18 @@ class BrowsePerspectiveScreen extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             boxShadow: [
               BoxShadow(
                 color: pColor.withValues(alpha: 0.2),
-                blurRadius: 20,
-                spreadRadius: -10,
-                offset: const Offset(0, 10),
+                blurRadius: 20.r,
+                spreadRadius: -10.r,
+                offset: Offset(0, 10.h),
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
             child: Stack(
               children: [
                 Positioned.fill(
@@ -202,41 +216,41 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: pColor.withValues(alpha: 0.4),
-                        width: 1.5,
+                        width: 1.5.w,
                       ),
-                      borderRadius: BorderRadius.circular(32),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     ),
                   ),
                 ),
                 // Content
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: EdgeInsets.all(AppSizes.paddingMd),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
                           color: pColor.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.white.withValues(alpha: 0.3),
-                            width: 0.5,
+                            width: 0.5.w,
                           ),
                         ),
                         child: Icon(
                           p['icon'],
                           color: Colors.white,
-                          size: 20,
+                          size: AppSizes.iconSm,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       Text(
                         p['title'],
                         style: GoogleFonts.playfairDisplay(
                           color: Colors.white,
-                          fontSize: 22,
+                          fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -244,7 +258,7 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                         p['subtitle'],
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
-                          fontSize: 12,
+                          fontSize: AppSizes.fontXs,
                           letterSpacing: 0.5,
                         ),
                       ),

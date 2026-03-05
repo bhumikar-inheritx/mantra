@@ -1,16 +1,22 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../localization/app_localizations.dart';
 import '../../../localization/locale_provider.dart';
+import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/providers/muhurta_provider.dart';
+import '../../chanting/providers/audio_chant_provider.dart';
+import '../../chanting/providers/practice_session_provider.dart';
 import '../../mantra/providers/mantra_provider.dart';
 import '../../mantra/screens/mantra_detail_screen.dart';
 import '../../mantra/screens/mantra_list_screen.dart';
 import '../providers/dashboard_provider.dart';
+import '../providers/mini_player_provider.dart';
 import '../providers/onboarding_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -63,15 +69,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildAppBar(context, localeProvider, l10n, muhurta),
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSizes.paddingLg,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         _buildPersonalGreeting(muhurta),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         _buildQuoteCarousel(dashboard, muhurta),
-                        const SizedBox(height: 32),
+                        SizedBox(height: 32.h),
                         _buildSectionHeader(
                           l10n.translate('recommended_mantra'),
                           () {
@@ -84,14 +92,33 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           muhurta,
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         _buildMantraSpotlight(mantraProvider),
-                        const SizedBox(height: 32),
+                        SizedBox(height: 32.h),
                         _buildQuickRituals(context, l10n, muhurta),
-                        const SizedBox(height: 40),
+                        SizedBox(height: 40.h),
                       ],
                     ),
                   ),
+                ),
+                Consumer3<
+                  AudioPlayerProvider,
+                  AudioChantProvider,
+                  PracticeSessionProvider
+                >(
+                  builder: (context, audio, chant, practice, _) {
+                    final miniPlayer = context.read<MiniPlayerProvider>();
+                    final show = miniPlayer.showMiniPlayer(
+                      audio,
+                      chant,
+                      practice,
+                    );
+                    return SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: show ? MiniPlayerProvider.height + 20.h : 20.h,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -108,25 +135,25 @@ class _HomeScreenState extends State<HomeScreen> {
     MuhurtaProvider muhurta,
   ) {
     return SliverAppBar(
-      expandedHeight: 120,
+      expandedHeight: 120.h,
       floating: true,
       pinned: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
       flexibleSpace: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          filter: ImageFilter.blur(sigmaX: 10.r, sigmaY: 10.r),
           child: Container(
             color: (muhurta.isDarkPhase ? Colors.black : Colors.white)
                 .withValues(alpha: 0.1),
             child: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
+              titlePadding: EdgeInsets.only(left: 20.w, bottom: 16.h),
               title: Text(
                 l10n.translate('app_title'),
                 style: TextStyle(
                   color: muhurta.primaryTextColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
+                  fontSize: AppSizes.fontHeading2,
                 ),
               ),
             ),
@@ -135,7 +162,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.language, color: muhurta.primaryTextColor),
+          icon: Icon(
+            Icons.language,
+            color: muhurta.primaryTextColor,
+            size: AppSizes.iconMd,
+          ),
           onPressed: () {
             final currentLanguage = localeProvider.locale.languageCode;
             localeProvider.setLocale(
@@ -143,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: 8.w),
       ],
     );
   }
@@ -155,28 +186,28 @@ class _HomeScreenState extends State<HomeScreen> {
           alignment: Alignment.center,
           children: [
             Container(
-              width: 60,
-              height: 60,
+              width: 60.w,
+              height: 60.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: muhurta.accentColor.withValues(alpha: 0.2),
-                  width: 2,
+                  width: 2.w,
                 ),
               ),
             ),
             CircleAvatar(
-              radius: 26,
+              radius: 26.r,
               backgroundColor: muhurta.accentColor.withValues(alpha: 0.1),
               child: Icon(
                 Icons.person_outline,
                 color: muhurta.accentColor,
-                size: 28,
+                size: AppSizes.iconLg,
               ),
             ),
           ],
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16.w),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -184,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
               muhurta.greeting,
               style: TextStyle(
                 color: muhurta.accentColor,
-                fontSize: 14,
+                fontSize: AppSizes.fontBody,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
               ),
@@ -194,21 +225,21 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 color: muhurta.primaryTextColor,
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: AppSizes.fontHeading3,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
               decoration: BoxDecoration(
                 color: muhurta.accentColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
               child: Text(
                 muhurta.phaseDescription.toUpperCase(),
                 style: TextStyle(
                   color: muhurta.accentColor,
-                  fontSize: 10,
+                  fontSize: AppSizes.fontXs,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.0,
                 ),
@@ -228,18 +259,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(AppSizes.paddingLg),
       decoration: BoxDecoration(
         color: muhurta.isDarkPhase
             ? Colors.white.withValues(alpha: 0.05)
             : AppColors.sandalwoodLight,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(color: muhurta.accentColor.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            blurRadius: 15.r,
+            offset: Offset(0, 5.h),
           ),
         ],
       ),
@@ -251,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Icon(
               Icons.auto_awesome,
               color: muhurta.accentColor.withValues(alpha: 0.2),
-              size: 48,
+              size: 48.w,
             ),
           ),
           Column(
@@ -261,54 +292,54 @@ class _HomeScreenState extends State<HomeScreen> {
                 "SPIRITUAL PRESCRIPTION",
                 style: TextStyle(
                   color: muhurta.accentColor,
-                  fontSize: 10,
+                  fontSize: AppSizes.fontXs,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2.0,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Text(
                 insight.verse,
                 style: TextStyle(
                   color: muhurta.accentColor,
-                  fontSize: 18,
+                  fontSize: AppSizes.fontTitle,
                   fontWeight: FontWeight.bold,
                   fontFamily:
                       'Devanagari', // Assuming font support, otherwise falls back
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               Text(
                 insight.translation,
                 style: TextStyle(
                   color: muhurta.primaryTextColor,
-                  fontSize: 15,
+                  fontSize: AppSizes.fontBody,
                   fontWeight: FontWeight.w500,
                   fontStyle: FontStyle.italic,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(AppSizes.paddingMd),
                 decoration: BoxDecoration(
                   color: muhurta.accentColor.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.lightbulb_outline,
                       color: muhurta.accentColor,
-                      size: 16,
+                      size: AppSizes.iconSm,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
                         insight.context,
                         style: TextStyle(
                           color: muhurta.secondaryTextColor,
-                          fontSize: 12,
+                          fontSize: AppSizes.fontSm,
                         ),
                       ),
                     ),
@@ -334,13 +365,19 @@ class _HomeScreenState extends State<HomeScreen> {
           title,
           style: TextStyle(
             color: muhurta.primaryTextColor,
-            fontSize: 20,
+            fontSize: AppSizes.fontHeading3,
             fontWeight: FontWeight.bold,
           ),
         ),
         TextButton(
           onPressed: onSeeAll,
-          child: Text("See All", style: TextStyle(color: muhurta.accentColor)),
+          child: Text(
+            "See All",
+            style: TextStyle(
+              color: muhurta.accentColor,
+              fontSize: AppSizes.fontSm,
+            ),
+          ),
         ),
       ],
     );
@@ -358,49 +395,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(AppSizes.paddingLg),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.templeSaffron, AppColors.sacredMarigold],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         boxShadow: [
           BoxShadow(
             color: AppColors.templeSaffron.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            blurRadius: 20.r,
+            offset: Offset(0, 10.h),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "TODAY'S SELECTION",
             style: TextStyle(
               color: Colors.white70,
-              fontSize: 10,
+              fontSize: AppSizes.fontXs,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Text(
             featured.title,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 26,
+              fontSize: 26.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           Text(
             featured.category,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: AppSizes.fontBody,
+            ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24.h),
           ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -415,14 +455,20 @@ class _HomeScreenState extends State<HomeScreen> {
               foregroundColor: AppColors.templeSaffron,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
             ),
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSizes.paddingMd,
+                vertical: 8.h,
+              ),
               child: Text(
                 "START NOW",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: AppSizes.fontSm,
+                ),
               ),
             ),
           ),
@@ -439,16 +485,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "QUICK RITUALS",
           style: TextStyle(
             color: AppColors.earthyGrey,
-            fontSize: 12,
+            fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           children: [
             _buildRitualIcon(Icons.timer_outlined, "Morning", muhurta),
@@ -461,23 +507,36 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildRitualIcon(IconData icon, String label, MuhurtaProvider muhurta) {
+  Widget _buildRitualIcon(
+    IconData icon,
+    String label,
+    MuhurtaProvider muhurta,
+  ) {
     return Expanded(
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
               color: AppColors.sandalwoodLight,
               shape: BoxShape.circle,
-              border: Border.all(color: muhurta.accentColor.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: muhurta.accentColor.withValues(alpha: 0.2),
+              ),
             ),
-            child: Icon(icon, color: muhurta.accentColor),
+            child: Icon(
+              icon,
+              color: muhurta.accentColor,
+              size: AppSizes.iconMd,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             label,
-            style: TextStyle(color: muhurta.primaryTextColor, fontSize: 12),
+            style: TextStyle(
+              color: muhurta.primaryTextColor,
+              fontSize: AppSizes.fontSm,
+            ),
           ),
         ],
       ),

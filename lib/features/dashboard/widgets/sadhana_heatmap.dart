@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 
 class SadhanaHeatmap extends StatelessWidget {
@@ -14,11 +16,11 @@ class SadhanaHeatmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(AppSizes.paddingLg),
       decoration: BoxDecoration(
-        color: muhurta.isDarkPhase ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: muhurta.accentColor.withValues(alpha: 0.1)),
+        color: muhurta.isDarkPhase ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: muhurta.accentColor.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,7 +32,7 @@ class SadhanaHeatmap extends StatelessWidget {
                 "SADHANA CONSISTENCY",
                 style: TextStyle(
                   color: muhurta.accentColor,
-                  fontSize: 10,
+                  fontSize: AppSizes.fontXs,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
                 ),
@@ -39,19 +41,19 @@ class SadhanaHeatmap extends StatelessWidget {
                 "LAST 30 DAYS",
                 style: TextStyle(
                   color: muhurta.secondaryTextColor,
-                  fontSize: 10,
+                  fontSize: AppSizes.fontXs,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           LayoutBuilder(
             builder: (context, constraints) {
-              final itemSize = (constraints.maxWidth - (9 * 8)) / 10;
+              final itemSize = (constraints.maxWidth - (9 * 8.w)) / 10;
               return Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: 8.w,
+                runSpacing: 8.h,
                 children: List.generate(30, (index) {
                   final count = activity[index];
                   return _buildHeatmapDot(count, itemSize);
@@ -59,20 +61,20 @@ class SadhanaHeatmap extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Row(
             children: [
-              Text("Less", style: TextStyle(color: muhurta.secondaryTextColor, fontSize: 10)),
-              const SizedBox(width: 4),
-              _buildHeatmapDot(0, 10),
-              const SizedBox(width: 4),
-              _buildHeatmapDot(108, 10),
-              const SizedBox(width: 4),
-              _buildHeatmapDot(324, 10),
-              const SizedBox(width: 4),
-              _buildHeatmapDot(1008, 10),
-              const SizedBox(width: 4),
-              Text("More", style: TextStyle(color: muhurta.secondaryTextColor, fontSize: 10)),
+              Text("Less", style: TextStyle(color: muhurta.secondaryTextColor, fontSize: AppSizes.fontXs)),
+              SizedBox(width: 4.w),
+              _buildHeatmapDot(0, 10.w),
+              SizedBox(width: 4.w),
+              _buildHeatmapDot(108, 10.w),
+              SizedBox(width: 4.w),
+              _buildHeatmapDot(324, 10.w),
+              SizedBox(width: 4.w),
+              _buildHeatmapDot(1008, 10.w),
+              SizedBox(width: 4.w),
+              Text("More", style: TextStyle(color: muhurta.secondaryTextColor, fontSize: AppSizes.fontXs)),
             ],
           ),
         ],
@@ -96,13 +98,13 @@ class SadhanaHeatmap extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: muhurta.accentColor.withValues(alpha: opacity),
+        color: muhurta.accentColor.withOpacity(opacity),
         shape: BoxShape.circle,
         boxShadow: count > 0 ? [
           BoxShadow(
-            color: muhurta.accentColor.withValues(alpha: opacity * 0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: muhurta.accentColor.withOpacity(opacity * 0.3),
+            blurRadius: 4.r,
+            offset: Offset(0, 2.h),
           )
         ] : null,
       ),

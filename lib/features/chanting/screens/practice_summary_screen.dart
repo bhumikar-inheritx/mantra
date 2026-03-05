@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../../dashboard/providers/dashboard_provider.dart';
+import '../../dashboard/providers/mini_player_provider.dart';
 import '../providers/practice_session_provider.dart';
 
 class PracticeSummaryScreen extends StatefulWidget {
@@ -37,6 +39,13 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Reset offset for standalone summary screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
+      }
+    });
+
     final muhurta = Provider.of<MuhurtaProvider>(context);
 
     return Scaffold(
@@ -51,45 +60,45 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 32.0,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSizes.paddingLg,
+              vertical: AppSizes.paddingXl,
             ),
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 // Success Badge
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.w),
                   decoration: BoxDecoration(
                     color: muhurta.accentColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.auto_awesome,
-                    size: 64,
+                    size: AppSizes.iconXxl,
                     color: muhurta.accentColor,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 Text(
                   "Sadhana Complete",
                   style: GoogleFonts.playfairDisplay(
-                    fontSize: 32,
+                    fontSize: AppSizes.fontHeading1,
                     fontWeight: FontWeight.bold,
                     color: muhurta.primaryTextColor,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   "May the vibrations of this practice stay with you.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: muhurta.secondaryTextColor,
-                    fontSize: 16,
+                    fontSize: AppSizes.fontTitle,
                   ),
                 ),
-                const SizedBox(height: 48),
+                SizedBox(height: 48.h),
 
                 // Stats Section
                 Row(
@@ -101,7 +110,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                       Icons.repeat,
                       muhurta,
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16.w),
                     _buildStatCard(
                       context,
                       "TOTAL TIME",
@@ -111,15 +120,15 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
 
                 // Mantra Card
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.w),
                   decoration: BoxDecoration(
                     color: (muhurta.isDarkPhase ? Colors.white : Colors.black)
                         .withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                     border: Border.all(
                       color: muhurta.accentColor.withValues(alpha: 0.2),
                     ),
@@ -127,7 +136,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12.w),
                         decoration: BoxDecoration(
                           color: muhurta.accentColor.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
@@ -135,28 +144,29 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                         child: Icon(
                           Icons.music_note,
                           color: muhurta.accentColor,
+                          size: AppSizes.iconMd,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               "PRACTICED",
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: AppSizes.fontXs,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.mistGrey,
+                                color: muhurta.secondaryTextColor,
                                 letterSpacing: 1.5,
                               ),
                             ),
                             Text(
                               widget.mantraTitle,
-                              style: const TextStyle(
-                                fontSize: 18,
+                              style: TextStyle(
+                                fontSize: AppSizes.fontTitle,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: muhurta.primaryTextColor,
                               ),
                             ),
                           ],
@@ -165,7 +175,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 48),
+                SizedBox(height: 48.h),
 
                 // Reflection Section
                 Align(
@@ -174,34 +184,40 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                     "HOW DO YOU FEEL NOW?",
                     style: TextStyle(
                       color: muhurta.accentColor,
-                      fontSize: 12,
+                      fontSize: AppSizes.fontSm,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                SizedBox(height: 16.h),
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  spacing: 8.w,
+                  runSpacing: 12.h,
                   children: List.generate(_moods.length, (index) {
                     final isSelected = _selectedMoodIndex == index;
                     return GestureDetector(
                       onTap: () => setState(() => _selectedMoodIndex = index),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 12,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 12.h,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? muhurta.accentColor.withValues(alpha: 0.2)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusLg,
+                          ),
                           border: Border.all(
                             color: isSelected
                                 ? muhurta.accentColor
-                                : Colors.white24,
+                                : (muhurta.isDarkPhase
+                                      ? Colors.white24
+                                      : Colors.black26),
                             width: 1,
                           ),
                         ),
@@ -209,16 +225,18 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                           children: [
                             Text(
                               _moods[index]['emoji'],
-                              style: const TextStyle(fontSize: 24),
+                              style: TextStyle(fontSize: AppSizes.iconMd),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4.h),
                             Text(
                               _moods[index]['label'],
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: AppSizes.fontXs,
                                 color: isSelected
                                     ? muhurta.accentColor
-                                    : Colors.white54,
+                                    : (muhurta.isDarkPhase
+                                          ? Colors.white54
+                                          : Colors.black54),
                               ),
                             ),
                           ],
@@ -227,34 +245,38 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                     );
                   }),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 TextField(
                   controller: _reflectionController,
                   maxLines: 3,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: muhurta.primaryTextColor),
                   decoration: InputDecoration(
                     hintText: "Add a note to your practice (optional)...",
-                    hintStyle: const TextStyle(color: Colors.white24),
+                    hintStyle: TextStyle(
+                      color: muhurta.secondaryTextColor.withValues(alpha: 0.5),
+                    ),
                     filled: true,
-                    fillColor: Colors.white.withValues(alpha: 0.05),
+                    fillColor:
+                        (muhurta.isDarkPhase ? Colors.white : Colors.black)
+                            .withValues(alpha: 0.05),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: BorderSide.none,
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: BorderSide(
                         color: muhurta.accentColor.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 48),
+                SizedBox(height: 48.h),
 
                 // Complete Button
                 SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: AppSizes.buttonHeight,
                   child: ElevatedButton(
                     onPressed: () {
                       // Finalize log
@@ -270,20 +292,20 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                       backgroundColor: muhurta.accentColor,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.r),
                       ),
                       elevation: 8,
                     ),
-                    child: const Text(
+                    child: Text(
                       "FINISH & SAVE PROGRESS",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: AppSizes.fontTitle,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
               ],
             ),
           ),
@@ -301,37 +323,39 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
   ) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 24),
+        padding: EdgeInsets.symmetric(vertical: AppSizes.paddingLg),
         decoration: BoxDecoration(
           color: (muhurta.isDarkPhase ? Colors.white : Colors.black).withValues(
             alpha: 0.05,
           ),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white10),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          border: Border.all(
+            color: muhurta.isDarkPhase ? Colors.white10 : Colors.black12,
+          ),
         ),
         child: Column(
           children: [
             Icon(
               icon,
               color: muhurta.accentColor.withValues(alpha: 0.5),
-              size: 24,
+              size: AppSizes.iconMd,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             Text(
               label,
-              style: const TextStyle(
-                color: AppColors.mistGrey,
-                fontSize: 10,
+              style: TextStyle(
+                color: muhurta.secondaryTextColor,
+                fontSize: AppSizes.fontXs,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.5,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               value,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
+              style: TextStyle(
+                color: muhurta.primaryTextColor,
+                fontSize: AppSizes.fontHeading3,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'monospace',
               ),

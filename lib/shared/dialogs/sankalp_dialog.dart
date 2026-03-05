@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:deep_mantra/shared/providers/sankalp_provider.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:deep_mantra/core/theme/app_colors.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SankalpDialog extends StatefulWidget {
   final Function(int target) onStart;
@@ -42,37 +44,37 @@ class _SankalpDialogState extends State<SankalpDialog> {
 
         return AlertDialog(
           backgroundColor: muhurta.isDarkPhase ? AppColors.surfaceDark : AppColors.sandalwoodLight,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusLg)),
           scrollable: true,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Icon(Icons.wb_sunny_outlined, color: muhurta.accentColor, size: 48),
+                child: Icon(Icons.wb_sunny_outlined, color: muhurta.accentColor, size: AppSizes.iconXxl),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Center(
                 child: Text(
                   'SET YOUR SANKALP',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: muhurta.accentColor,
-                    fontSize: 20,
+                    fontSize: AppSizes.fontHeading3,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               Text(
                 'Repetitions',
-                style: TextStyle(color: muhurta.secondaryTextColor, fontWeight: FontWeight.bold),
+                style: TextStyle(color: muhurta.secondaryTextColor, fontWeight: FontWeight.bold, fontSize: AppSizes.fontSm),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 12.w,
+                runSpacing: 12.h,
                 alignment: WrapAlignment.start,
                 children: [
                   ...provider.targets.map((target) {
@@ -83,8 +85,8 @@ class _SankalpDialogState extends State<SankalpDialog> {
                         _customController.clear();
                       },
                       child: Container(
-                        width: 50,
-                        height: 50,
+                        width: 50.w,
+                        height: 50.w,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -96,7 +98,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                           style: TextStyle(
                             color: isSelected ? muhurta.onAccentColor : muhurta.primaryTextColor,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                            fontSize: AppSizes.fontBody,
                           ),
                         ),
                       ),
@@ -109,8 +111,8 @@ class _SankalpDialogState extends State<SankalpDialog> {
                       }
                     },
                     child: Container(
-                      width: 50,
-                      height: 50,
+                      width: 50.w,
+                      height: 50.w,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -122,7 +124,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                         style: TextStyle(
                           color: isCustom ? muhurta.onAccentColor : muhurta.primaryTextColor,
                           fontWeight: FontWeight.bold,
-                          fontSize: 10,
+                          fontSize: AppSizes.fontXs,
                         ),
                       ),
                     ),
@@ -130,7 +132,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                 ],
               ),
               if (isCustom) ...[
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 TextField(
                   controller: _customController,
                   keyboardType: TextInputType.number,
@@ -142,7 +144,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                     filled: true,
                     fillColor: muhurta.accentColor.withValues(alpha: 0.05),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
                       borderSide: const BorderSide(color: AppColors.templeGold),
                     ),
                   ),
@@ -152,7 +154,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                   },
                 ),
               ],
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -169,10 +171,10 @@ class _SankalpDialogState extends State<SankalpDialog> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: muhurta.accentColor,
                     foregroundColor: muhurta.onAccentColor,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   ),
-                  child: const Text('IGNITE SANKALP'),
+                  child: Text('IGNITE SANKALP', style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppSizes.fontBody)),
                 ),
               ),
             ],

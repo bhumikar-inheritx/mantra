@@ -1,16 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:deep_mantra/core/theme/app_colors.dart';
-import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
 import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
+import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
+import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+
+import '../../dashboard/providers/mini_player_provider.dart';
 import 'practice_summary_screen.dart';
 
 class AudioLoopPracticeScreen extends StatefulWidget {
   const AudioLoopPracticeScreen({super.key});
 
   @override
-  State<AudioLoopPracticeScreen> createState() => _AudioLoopPracticeScreenState();
+  State<AudioLoopPracticeScreen> createState() =>
+      _AudioLoopPracticeScreenState();
 }
 
 class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
@@ -22,16 +27,20 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
       final audio = context.read<AudioChantProvider>();
       if (session.selectedMantra != null) {
         session.startSession();
-        audio.initialize(
-          session.selectedMantra!.audioUrl,
-          session.targetCount,
-        );
+        audio.initialize(session.selectedMantra!.audioUrl, session.targetCount);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Reset offset for standalone practice screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
+      }
+    });
+
     final muhurta = Provider.of<MuhurtaProvider>(context);
     final session = Provider.of<PracticeSessionProvider>(context);
 
@@ -51,19 +60,19 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
               _buildHeader(context, session, muhurta),
               const Spacer(),
               _buildProgressCircle(muhurta),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               Text(
                 session.sessionDuration.formatMMSS(),
                 style: TextStyle(
                   color: muhurta.secondaryTextColor,
-                  fontSize: 18,
+                  fontSize: AppSizes.fontTitle,
                   fontFamily: 'monospace',
                   letterSpacing: 2,
                 ),
               ),
               const Spacer(),
               _buildControls(muhurta),
-              const SizedBox(height: 48),
+              SizedBox(height: 48.h),
             ],
           ),
         ),
@@ -71,14 +80,22 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, PracticeSessionProvider session, MuhurtaProvider muhurta) {
+  Widget _buildHeader(
+    BuildContext context,
+    PracticeSessionProvider session,
+    MuhurtaProvider muhurta,
+  ) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(AppSizes.paddingLg),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: Icon(Icons.close, color: muhurta.primaryTextColor),
+            icon: Icon(
+              Icons.close,
+              color: muhurta.primaryTextColor,
+              size: AppSizes.iconMd,
+            ),
             onPressed: () => _showExitConfirmation(context),
           ),
           Column(
@@ -87,7 +104,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                 session.selectedMantra?.title ?? "Mantra",
                 style: TextStyle(
                   color: muhurta.primaryTextColor,
-                  fontSize: 18,
+                  fontSize: AppSizes.fontTitle,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -95,13 +112,13 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                 "GUIDED AUDIO",
                 style: TextStyle(
                   color: muhurta.accentColor,
-                  fontSize: 10,
+                  fontSize: AppSizes.fontXs,
                   letterSpacing: 2,
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 48),
+          SizedBox(width: AppSizes.iconXl),
         ],
       ),
     );
@@ -116,30 +133,45 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
       builder: (dialogContext) {
         final m = Provider.of<MuhurtaProvider>(dialogContext, listen: false);
         return AlertDialog(
-          backgroundColor: m.isDarkPhase ? Colors.grey[900] : AppColors.sandalwoodLight,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text("Finish Session?", style: TextStyle(color: m.primaryTextColor)),
-          content: Text("Would you like to stop and save your progress?", style: TextStyle(color: m.secondaryTextColor)),
+          backgroundColor: m.isDarkPhase
+              ? Colors.grey[900]
+              : AppColors.sandalwoodLight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Text(
+            "Finish Session?",
+            style: TextStyle(color: m.primaryTextColor),
+          ),
+          content: Text(
+            "Would you like to stop and save your progress?",
+            style: TextStyle(color: m.secondaryTextColor),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text("CANCEL", style: TextStyle(color: m.secondaryTextColor)),
+              child: Text(
+                "CANCEL",
+                style: TextStyle(color: m.secondaryTextColor),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: m.accentColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                ),
               ),
               onPressed: () {
                 final finalCount = audio.currentCount;
                 final duration = session.sessionDuration;
                 final mantraTitle = session.selectedMantra?.title ?? "Mantra";
-                
+
                 // Stop audio
                 audio.stop();
-                
+
                 Navigator.pop(dialogContext); // Close dialog
-                
+
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -151,7 +183,13 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                   ),
                 );
               },
-              child: Text("FINISH", style: TextStyle(color: m.onAccentColor, fontWeight: FontWeight.bold)),
+              child: Text(
+                "FINISH",
+                style: TextStyle(
+                  color: m.onAccentColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );
@@ -163,8 +201,9 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
     return Consumer<AudioChantProvider>(
       builder: (context, audio, child) {
         final bool isJustListen = audio.targetCount <= 0;
-        final totalProgress = !isJustListen && audio.targetCount > 0 
-            ? (audio.currentCount - 1 + audio.progressPercentage) / audio.targetCount 
+        final totalProgress = !isJustListen && audio.targetCount > 0
+            ? (audio.currentCount - 1 + audio.progressPercentage) /
+                  audio.targetCount
             : 0.0;
 
         return Stack(
@@ -172,15 +211,15 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
           children: [
             // Background Glow
             Container(
-              width: 220,
-              height: 220,
+              width: 220.w,
+              height: 220.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
                     color: muhurta.accentColor.withValues(alpha: 0.15),
-                    blurRadius: 40,
-                    spreadRadius: 10,
+                    blurRadius: 40.r,
+                    spreadRadius: 10.r,
                   ),
                 ],
               ),
@@ -188,11 +227,11 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
             // Outer Ring (Total Progress)
             if (!isJustListen)
               SizedBox(
-                width: 260,
-                height: 260,
+                width: 260.w,
+                height: 260.w,
                 child: CircularProgressIndicator(
                   value: totalProgress.clamp(0.0, 1.0),
-                  strokeWidth: 4,
+                  strokeWidth: 4.w,
                   backgroundColor: Colors.white.withValues(alpha: 0.05),
                   valueColor: AlwaysStoppedAnimation<Color>(
                     muhurta.accentColor.withValues(alpha: 0.3),
@@ -201,11 +240,11 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
               ),
             // Inner Ring (Current Repetition Progress)
             SizedBox(
-              width: 230,
-              height: 230,
+              width: 230.w,
+              height: 230.w,
               child: CircularProgressIndicator(
                 value: audio.progressPercentage,
-                strokeWidth: 12,
+                strokeWidth: 12.w,
                 strokeCap: StrokeCap.round,
                 backgroundColor: Colors.white.withValues(alpha: 0.1),
                 valueColor: AlwaysStoppedAnimation<Color>(muhurta.accentColor),
@@ -219,22 +258,27 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                   isJustListen ? "∞" : "${audio.currentCount}",
                   style: TextStyle(
                     color: muhurta.primaryTextColor,
-                    fontSize: 72,
+                    fontSize: 72.sp,
                     fontWeight: FontWeight.w200, // Thinner, more elegant
                     fontFamily: 'serif',
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 4.h,
+                  ),
                   decoration: BoxDecoration(
                     color: muhurta.accentColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(
+                      AppSizes.radiusCircular,
+                    ),
                   ),
                   child: Text(
                     isJustListen ? "CONTINUOUS" : "OF ${audio.targetCount}",
                     style: TextStyle(
                       color: muhurta.accentColor,
-                      fontSize: 12,
+                      fontSize: AppSizes.fontSm,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2,
                     ),
@@ -257,35 +301,37 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildSpeedButton("0.5x", audio, 0.5, muhurta),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
                 _buildSpeedButton("1x", audio, 1.0, muhurta),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
                 _buildSpeedButton("1.5x", audio, 1.5, muhurta),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
                 _buildSpeedButton("2x", audio, 2.0, muhurta),
               ],
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48.h),
             GestureDetector(
               onTap: audio.togglePlay,
               child: Container(
-                width: 80,
-                height: 80,
+                width: 80.w,
+                height: 80.w,
                 decoration: BoxDecoration(
                   color: muhurta.accentColor,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
                       color: muhurta.accentColor.withValues(alpha: 0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
+                      blurRadius: 20.r,
+                      spreadRadius: 5.r,
                     ),
                   ],
                 ),
                 child: Icon(
-                  audio.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  audio.isPlaying
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
                   color: Colors.black,
-                  size: 40,
+                  size: 40.w,
                 ),
               ),
             ),
@@ -295,22 +341,29 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
     );
   }
 
-  Widget _buildSpeedButton(String label, AudioChantProvider audio, double speed, MuhurtaProvider muhurta) {
+  Widget _buildSpeedButton(
+    String label,
+    AudioChantProvider audio,
+    double speed,
+    MuhurtaProvider muhurta,
+  ) {
     final isSelected = audio.playbackSpeed == speed;
     return GestureDetector(
       onTap: () => audio.setSpeed(speed),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
         decoration: BoxDecoration(
-          color: isSelected ? muhurta.accentColor : Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected
+              ? muhurta.accentColor
+              : Colors.white.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
         child: Text(
           label,
           style: TextStyle(
             color: isSelected ? Colors.black : muhurta.primaryTextColor,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 12,
+            fontSize: AppSizes.fontSm,
           ),
         ),
       ),

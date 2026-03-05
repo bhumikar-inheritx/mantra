@@ -1,13 +1,17 @@
+import 'package:deep_mantra/core/theme/app_colors.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
+import 'package:deep_mantra/features/chanting/providers/manual_japa_provider.dart';
+import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
+import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:deep_mantra/core/theme/app_colors.dart';
-import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/manual_japa_provider.dart';
-import 'practice_summary_screen.dart';
-import '../widgets/digital_mala_widget.dart';
+
+import '../../dashboard/providers/mini_player_provider.dart';
 import '../widgets/chakra_widget.dart';
+import '../widgets/digital_mala_widget.dart';
+import 'practice_summary_screen.dart';
 
 class ManualJapaScreen extends StatefulWidget {
   const ManualJapaScreen({super.key});
@@ -35,15 +39,19 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
     final manual = Provider.of<ManualJapaProvider>(context);
     final mantra = session.selectedMantra;
 
+    // Reset offset for standalone practice screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
+      }
+    });
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              muhurta.themeGradient.first,
-              muhurta.themeGradient.last,
-            ],
+            colors: [muhurta.themeGradient.first, muhurta.themeGradient.last],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -53,23 +61,30 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingMd,
+                  vertical: AppSizes.paddingSm,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.close, color: muhurta.primaryTextColor),
+                      icon: Icon(
+                        Icons.close,
+                        color: muhurta.primaryTextColor,
+                        size: AppSizes.iconMd,
+                      ),
                       onPressed: () => _showExitConfirmation(context),
                     ),
                     Text(
                       session.sessionDuration.formatMMSS(),
                       style: TextStyle(
                         fontFamily: 'monospace',
-                        fontSize: 20,
+                        fontSize: AppSizes.fontHeading3,
                         color: muhurta.primaryTextColor,
                       ),
                     ),
-                    const SizedBox(width: 48),
+                    SizedBox(width: AppSizes.iconXl), // Balance close button
                   ],
                 ),
               ),
@@ -81,17 +96,17 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                 Text(
                   mantra.sanskritText,
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: AppSizes.fontHeading2,
                     color: muhurta.accentColor,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   mantra.transliteration,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: AppSizes.fontTitle,
                     color: muhurta.secondaryTextColor,
                     fontStyle: FontStyle.italic,
                   ),
@@ -122,8 +137,10 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                         Text(
                           "TAP",
                           style: TextStyle(
-                            color: muhurta.secondaryTextColor.withValues(alpha: 0.5),
-                            fontSize: 12,
+                            color: muhurta.secondaryTextColor.withValues(
+                              alpha: 0.5,
+                            ),
+                            fontSize: AppSizes.fontSm,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2,
                           ),
@@ -131,8 +148,10 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                         Text(
                           "TO COUNT",
                           style: TextStyle(
-                            color: muhurta.secondaryTextColor.withValues(alpha: 0.5),
-                            fontSize: 10,
+                            color: muhurta.secondaryTextColor.withValues(
+                              alpha: 0.5,
+                            ),
+                            fontSize: AppSizes.fontXs,
                             letterSpacing: 1.5,
                           ),
                         ),
@@ -146,7 +165,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
 
               // Stats Row (Legacy Style)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
+                padding: EdgeInsets.symmetric(horizontal: 40.w),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -161,14 +180,14 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
 
               // Active Sankalp Badge
               _buildSankalpBadge(muhurta, session.selectedSankalp),
 
-              const SizedBox(height: 40),
-              
-               const SizedBox(height: 24),
+              SizedBox(height: 40.h),
+
+              SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -183,17 +202,17 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
           label,
           style: TextStyle(
             color: muhurta.secondaryTextColor,
-            fontSize: 12,
+            fontSize: AppSizes.fontSm,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4.h),
         Text(
           value,
           style: TextStyle(
             color: muhurta.primaryTextColor,
-            fontSize: 24,
+            fontSize: AppSizes.fontHeading3,
             fontWeight: FontWeight.bold,
             fontFamily: 'monospace',
           ),
@@ -204,22 +223,29 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
 
   Widget _buildSankalpBadge(MuhurtaProvider muhurta, String? sankalp) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSizes.paddingMd,
+        vertical: AppSizes.paddingSm,
+      ),
       decoration: BoxDecoration(
         color: muhurta.accentColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         border: Border.all(color: muhurta.accentColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.auto_awesome, color: muhurta.accentColor, size: 16),
-          const SizedBox(width: 8),
+          Icon(
+            Icons.auto_awesome,
+            color: muhurta.accentColor,
+            size: AppSizes.iconSm,
+          ),
+          SizedBox(width: 8.w),
           Text(
             "INTENTION: ${sankalp?.toUpperCase() ?? 'ACTIVE'}",
             style: TextStyle(
               color: muhurta.primaryTextColor,
-              fontSize: 12,
+              fontSize: AppSizes.fontSm,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.0,
             ),
@@ -238,27 +264,42 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
       builder: (dialogContext) {
         final m = Provider.of<MuhurtaProvider>(dialogContext, listen: false);
         return AlertDialog(
-          backgroundColor: m.isDarkPhase ? Colors.grey[900] : AppColors.sandalwoodLight,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text("Finish Session?", style: TextStyle(color: m.primaryTextColor)),
-          content: Text("Would you like to stop and save your progress?", style: TextStyle(color: m.secondaryTextColor)),
+          backgroundColor: m.isDarkPhase
+              ? Colors.grey[900]
+              : AppColors.sandalwoodLight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          ),
+          title: Text(
+            "Finish Session?",
+            style: TextStyle(color: m.primaryTextColor),
+          ),
+          content: Text(
+            "Would you like to stop and save your progress?",
+            style: TextStyle(color: m.secondaryTextColor),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text("CANCEL", style: TextStyle(color: m.secondaryTextColor)),
+              child: Text(
+                "CANCEL",
+                style: TextStyle(color: m.secondaryTextColor),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: m.accentColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                ),
               ),
               onPressed: () {
                 final finalCount = manual.currentCount;
                 final duration = session.sessionDuration;
                 final mantraTitle = session.selectedMantra?.title ?? "Mantra";
-                
+
                 Navigator.pop(dialogContext); // Close dialog
-                
+
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -270,7 +311,13 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                   ),
                 );
               },
-              child: Text("FINISH", style: TextStyle(color: m.onAccentColor, fontWeight: FontWeight.bold)),
+              child: Text(
+                "FINISH",
+                style: TextStyle(
+                  color: m.onAccentColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );

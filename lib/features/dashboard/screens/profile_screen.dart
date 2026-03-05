@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../core/theme/app_sizes.dart';
 import '../../../shared/providers/muhurta_provider.dart';
+import '../providers/mini_player_provider.dart';
+import '../../chanting/providers/audio_chant_provider.dart';
+import '../../chanting/providers/practice_session_provider.dart';
+import '../../../shared/providers/audio_player_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -25,30 +31,37 @@ class ProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 50,
+                  radius: 50.r,
                   backgroundColor: muhurta.accentColor.withValues(alpha: 0.2),
                   child: Icon(
                     Icons.person_rounded,
-                    size: 60,
+                    size: 60.w,
                     color: muhurta.accentColor,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 Text(
                   "Your Sacred Profile",
                   style: GoogleFonts.playfairDisplay(
-                    fontSize: 32,
+                    fontSize: AppSizes.fontHeading1,
                     fontWeight: FontWeight.bold,
                     color: muhurta.primaryTextColor,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 Text(
                   "Manage your spiritual journey.",
                   style: TextStyle(
                     color: muhurta.secondaryTextColor,
-                    fontSize: 16,
+                    fontSize: AppSizes.fontBody,
                   ),
+                ),
+                Consumer3<AudioPlayerProvider, AudioChantProvider, PracticeSessionProvider>(
+                  builder: (context, audio, chant, practice, _) {
+                    final miniPlayer = context.read<MiniPlayerProvider>();
+                    final show = miniPlayer.showMiniPlayer(audio, chant, practice);
+                    return SizedBox(height: show ? MiniPlayerProvider.height + 20.h : 20.h);
+                  },
                 ),
               ],
             ),

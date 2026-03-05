@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/mantra_model.dart';
 import '../screens/mantra_detail_screen.dart';
@@ -20,11 +22,11 @@ class MantraCard extends StatelessWidget {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: 16.h),
+        padding: EdgeInsets.all(AppSizes.paddingMd),
         decoration: BoxDecoration(
           color: AppColors.sandalwoodLight,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           border: Border.all(color: AppColors.templeGold.withValues(alpha: 0.1)),
           boxShadow: [
             BoxShadow(
@@ -38,55 +40,55 @@ class MantraCard extends StatelessWidget {
           children: [
             // Circular Image Placeholder
             Container(
-              width: 60,
-              height: 60,
+              width: 60.w,
+              height: 60.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: AppColors.goldenGradient,
-                border: Border.all(color: AppColors.templeGold, width: 2),
+                border: Border.all(color: AppColors.templeGold, width: 2.w),
               ),
-              child: const Icon(Icons.music_note, color: AppColors.cosmicBlack),
+              child: Icon(Icons.music_note, color: AppColors.cosmicBlack, size: AppSizes.iconMd),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     mantra.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.ancientBrown,
-                      fontSize: 18,
+                      fontSize: AppSizes.fontTitle,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Text(
                     mantra.category,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.templeGold,
-                      fontSize: 12,
+                      fontSize: AppSizes.fontSm,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     mantra.transliteration,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.mistGrey,
-                      fontSize: 14,
+                      fontSize: AppSizes.fontBody,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
               color: AppColors.templeGold,
-              size: 16,
+              size: AppSizes.iconSm,
             ),
           ],
         ),
