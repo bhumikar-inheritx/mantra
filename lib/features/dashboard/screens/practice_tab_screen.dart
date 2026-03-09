@@ -1,9 +1,6 @@
 import 'dart:ui';
 
-import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
-import 'package:deep_mantra/features/dashboard/providers/mini_player_provider.dart';
-import 'package:deep_mantra/shared/providers/audio_player_provider.dart';
+import 'package:deep_mantra/features/mantra/widgets/mantra_selection_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +10,6 @@ import '../../../core/theme/app_sizes.dart';
 import '../../../data/models/mantra_model.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../../mantra/providers/mantra_provider.dart';
-import '../../mantra/screens/mantra_detail_screen.dart';
 
 class PracticeTabScreen extends StatelessWidget {
   const PracticeTabScreen({super.key});
@@ -28,72 +24,56 @@ class PracticeTabScreen extends StatelessWidget {
         .where((m) => m.usageType == 'jaapSupported')
         .toList();
 
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: muhurta.themeGradient,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: muhurta.themeGradient,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        child: CustomScrollView(
-          slivers: [
-            _buildSliverAppBar(muhurta),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(AppSizes.paddingLg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSpotlight(context, practiceMantras, muhurta),
-                    SizedBox(height: 32.h),
-                    Text(
-                      "CHOOSE YOUR PRACTICE",
-                      style: TextStyle(
-                        color: muhurta.accentColor,
-                        fontSize: AppSizes.fontXs,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
-                      ),
+      ),
+      child: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(muhurta),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(AppSizes.paddingLg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSpotlight(context, practiceMantras, muhurta),
+                  SizedBox(height: 32.h),
+                  Text(
+                    "CHOOSE YOUR PRACTICE",
+                    style: TextStyle(
+                      color: muhurta.accentColor,
+                      fontSize: AppSizes.fontXs,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
                     ),
-                    SizedBox(height: 16.h),
-                  ],
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16.h,
-                  crossAxisSpacing: 16.w,
-                  childAspectRatio: 0.85,
-                ),
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final mantra = practiceMantras[index];
-                  return _PracticeGridItem(mantra: mantra);
-                }, childCount: practiceMantras.length),
-              ),
-            ),
-            Consumer3<
-              AudioPlayerProvider,
-              AudioChantProvider,
-              PracticeSessionProvider
-            >(
-              builder: (context, audio, chant, practice, _) {
-                final miniPlayer = context.read<MiniPlayerProvider>();
-                final show = miniPlayer.showMiniPlayer(audio, chant, practice);
-                return SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: show ? MiniPlayerProvider.height + 40.h : 40.h,
                   ),
-                );
-              },
+                  SizedBox(height: 16.h),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 16.h,
+                crossAxisSpacing: 16.w,
+                childAspectRatio: 0.85,
+              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final mantra = practiceMantras[index];
+                return _PracticeGridItem(mantra: mantra);
+              }, childCount: practiceMantras.length),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+        ],
       ),
     );
   }
@@ -105,26 +85,17 @@ class PracticeTabScreen extends StatelessWidget {
       pinned: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10.r, sigmaY: 10.r),
-          child: Container(
-            color: (muhurta.isDarkPhase ? Colors.black : Colors.white)
-                .withValues(alpha: 0.1),
-            child: FlexibleSpaceBar(
-              titlePadding: EdgeInsets.only(
-                left: AppSizes.paddingLg,
-                bottom: AppSizes.paddingMd,
-              ),
-              title: Text(
-                "Sadhana",
-                style: GoogleFonts.playfairDisplay(
-                  color: muhurta.primaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: AppSizes.fontHeading2,
-                ),
-              ),
-            ),
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: EdgeInsets.only(
+          left: AppSizes.paddingLg,
+          bottom: AppSizes.paddingMd,
+        ),
+        title: Text(
+          "Sadhana",
+          style: GoogleFonts.playfairDisplay(
+            color: muhurta.primaryTextColor,
+            fontWeight: FontWeight.bold,
+            fontSize: AppSizes.fontHeading2,
           ),
         ),
       ),
@@ -198,11 +169,12 @@ class PracticeTabScreen extends StatelessWidget {
           SizedBox(height: 24.h),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => MantraDetailScreen(mantra: featured),
-                ),
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) =>
+                    MantraSelectionBottomSheet(mantra: featured),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -237,9 +209,11 @@ class _PracticeGridItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => MantraDetailScreen(mantra: mantra)),
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => MantraSelectionBottomSheet(mantra: mantra),
         );
       },
       child: Container(

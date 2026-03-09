@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../dashboard/providers/mini_player_provider.dart';
+
 import 'practice_summary_screen.dart';
 
 class AudioLoopPracticeScreen extends StatefulWidget {
@@ -34,18 +34,18 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Reset offset for standalone practice screen
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
-      }
-    });
-
     final muhurta = Provider.of<MuhurtaProvider>(context);
     final session = Provider.of<PracticeSessionProvider>(context);
 
-    return Scaffold(
-      body: Container(
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          context.read<AudioChantProvider>().stop();
+          context.read<PracticeSessionProvider>().resetSession();
+        }
+      },
+      child: Scaffold(
+        body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -76,6 +76,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

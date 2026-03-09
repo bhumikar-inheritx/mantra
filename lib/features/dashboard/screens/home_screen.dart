@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -8,16 +6,14 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../localization/app_localizations.dart';
 import '../../../localization/locale_provider.dart';
-import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/providers/muhurta_provider.dart';
-import '../../chanting/providers/audio_chant_provider.dart';
-import '../../chanting/providers/practice_session_provider.dart';
 import '../../mantra/providers/mantra_provider.dart';
-import '../../mantra/screens/mantra_detail_screen.dart';
 import '../../mantra/screens/mantra_list_screen.dart';
+import '../../mantra/widgets/mantra_selection_bottom_sheet.dart';
 import '../providers/dashboard_provider.dart';
-import '../providers/mini_player_provider.dart';
 import '../providers/onboarding_provider.dart';
+import '../providers/quick_ritual_provider.dart';
+import 'quick_ritual_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,73 +51,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Consumer<MuhurtaProvider>(
       builder: (context, muhurta, child) {
-        return Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: muhurta.themeGradient,
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: muhurta.themeGradient,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            child: CustomScrollView(
-              slivers: [
-                _buildAppBar(context, localeProvider, l10n, muhurta),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppSizes.paddingLg,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20.h),
-                        _buildPersonalGreeting(muhurta),
-                        SizedBox(height: 20.h),
-                        _buildQuoteCarousel(dashboard, muhurta),
-                        SizedBox(height: 32.h),
-                        _buildSectionHeader(
-                          l10n.translate('recommended_mantra'),
-                          () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const MantraListScreen(),
-                              ),
-                            );
-                          },
-                          muhurta,
-                        ),
-                        SizedBox(height: 16.h),
-                        _buildMantraSpotlight(mantraProvider),
-                        SizedBox(height: 32.h),
-                        _buildQuickRituals(context, l10n, muhurta),
-                        SizedBox(height: 40.h),
-                      ],
-                    ),
+          ),
+          child: CustomScrollView(
+            slivers: [
+              _buildAppBar(context, localeProvider, l10n, muhurta),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      _buildPersonalGreeting(muhurta),
+                      SizedBox(height: 20.h),
+                      _buildQuoteCarousel(dashboard, muhurta),
+                      SizedBox(height: 32.h),
+                      _buildSectionHeader(
+                        l10n.translate('recommended_mantra'),
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const MantraListScreen(),
+                            ),
+                          );
+                        },
+                        muhurta,
+                      ),
+                      SizedBox(height: 16.h),
+                      _buildMantraSpotlight(mantraProvider),
+                      SizedBox(height: 32.h),
+                      _buildQuickRituals(context, l10n, muhurta),
+                      SizedBox(height: 40.h),
+                    ],
                   ),
                 ),
-                Consumer3<
-                  AudioPlayerProvider,
-                  AudioChantProvider,
-                  PracticeSessionProvider
-                >(
-                  builder: (context, audio, chant, practice, _) {
-                    final miniPlayer = context.read<MiniPlayerProvider>();
-                    final show = miniPlayer.showMiniPlayer(
-                      audio,
-                      chant,
-                      practice,
-                    );
-                    return SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: show ? MiniPlayerProvider.height + 20.h : 20.h,
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+            ],
           ),
         );
       },
@@ -138,25 +112,16 @@ class _HomeScreenState extends State<HomeScreen> {
       expandedHeight: 120.h,
       floating: true,
       pinned: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.sandalwoodWhite,
       elevation: 0,
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10.r, sigmaY: 10.r),
-          child: Container(
-            color: (muhurta.isDarkPhase ? Colors.black : Colors.white)
-                .withValues(alpha: 0.1),
-            child: FlexibleSpaceBar(
-              titlePadding: EdgeInsets.only(left: 20.w, bottom: 16.h),
-              title: Text(
-                l10n.translate('app_title'),
-                style: TextStyle(
-                  color: muhurta.primaryTextColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: AppSizes.fontHeading2,
-                ),
-              ),
-            ),
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: EdgeInsets.only(left: 20.w, bottom: 16.h),
+        title: Text(
+          l10n.translate('app_title'),
+          style: TextStyle(
+            color: muhurta.primaryTextColor,
+            fontWeight: FontWeight.bold,
+            fontSize: AppSizes.fontHeading2,
           ),
         ),
       ),
@@ -443,11 +408,12 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 24.h),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => MantraDetailScreen(mantra: featured),
-                ),
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) =>
+                    MantraSelectionBottomSheet(mantra: featured),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -482,6 +448,14 @@ class _HomeScreenState extends State<HomeScreen> {
     AppLocalizations l10n,
     MuhurtaProvider muhurta,
   ) {
+    void handleRitualTap(QuickRitualType type) {
+      context.read<QuickRitualProvider>().startRitual(type);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const QuickRitualScreen()),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -497,10 +471,10 @@ class _HomeScreenState extends State<HomeScreen> {
         SizedBox(height: 16.h),
         Row(
           children: [
-            _buildRitualIcon(Icons.timer_outlined, "Morning", muhurta),
-            _buildRitualIcon(Icons.self_improvement, "Peace", muhurta),
-            _buildRitualIcon(Icons.shield_outlined, "Protection", muhurta),
-            _buildRitualIcon(Icons.nightlight_outlined, "Sleep", muhurta),
+            _buildRitualIcon(Icons.timer_outlined, "Morning", muhurta, () => handleRitualTap(QuickRitualType.morning)),
+            _buildRitualIcon(Icons.self_improvement, "Peace", muhurta, () => handleRitualTap(QuickRitualType.peace)),
+            _buildRitualIcon(Icons.shield_outlined, "Protection", muhurta, () => handleRitualTap(QuickRitualType.protection)),
+            _buildRitualIcon(Icons.nightlight_outlined, "Sleep", muhurta, () => handleRitualTap(QuickRitualType.sleep)),
           ],
         ),
       ],
@@ -511,34 +485,39 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData icon,
     String label,
     MuhurtaProvider muhurta,
+    VoidCallback onTap,
   ) {
     return Expanded(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: AppColors.sandalwoodLight,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: muhurta.accentColor.withValues(alpha: 0.2),
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
+                color: AppColors.sandalwoodLight,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: muhurta.accentColor.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Icon(
+                icon,
+                color: muhurta.accentColor,
+                size: AppSizes.iconMd,
               ),
             ),
-            child: Icon(
-              icon,
-              color: muhurta.accentColor,
-              size: AppSizes.iconMd,
+            SizedBox(height: 8.h),
+            Text(
+              label,
+              style: TextStyle(
+                color: muhurta.primaryTextColor,
+                fontSize: AppSizes.fontSm,
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            label,
-            style: TextStyle(
-              color: muhurta.primaryTextColor,
-              fontSize: AppSizes.fontSm,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

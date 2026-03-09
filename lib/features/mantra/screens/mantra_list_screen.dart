@@ -1,22 +1,18 @@
-import 'dart:ui';
-
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:deep_mantra/features/dashboard/providers/mini_player_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
-import 'package:deep_mantra/shared/providers/audio_player_provider.dart';
 
 import 'package:deep_mantra/core/theme/app_colors.dart';
 import 'package:deep_mantra/core/theme/app_sizes.dart';
 import 'package:deep_mantra/data/models/mantra_model.dart';
+import 'package:deep_mantra/features/dashboard/providers/onboarding_provider.dart';
+import 'package:deep_mantra/features/dashboard/widgets/deep_mantra_scaffold.dart';
+import 'package:deep_mantra/features/mantra/widgets/mantra_selection_bottom_sheet.dart';
 import 'package:deep_mantra/localization/app_localizations.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/dashboard/providers/onboarding_provider.dart';
-import 'package:deep_mantra/features/mantra/providers/mantra_provider.dart';
-import 'package:deep_mantra/features/mantra/screens/mantra_detail_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/mantra_provider.dart';
 
 class MantraListScreen extends StatefulWidget {
   final String? title;
@@ -57,128 +53,118 @@ class _MantraListScreenState extends State<MantraListScreen> {
     final mantraProvider = Provider.of<MantraProvider>(context);
     final onboardingProvider = Provider.of<OnboardingProvider>(context);
 
-    // Reset offset when in list screen (pushed as new route)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
-      }
-    });
-
     return Consumer<MuhurtaProvider>(
       builder: (context, muhurta, child) {
         final showRecommendations =
             mantraProvider.selectedCategory == 'All' &&
             mantraProvider.selectedDeity == 'All' &&
             mantraProvider.searchQuery.isEmpty;
-        
+
         final hasPerspectiveFilter = widget.title != null;
 
-        return Consumer3<AudioPlayerProvider, AudioChantProvider, PracticeSessionProvider>(
-          builder: (context, audio, chant, practice, child) {
-            final miniPlayer = context.read<MiniPlayerProvider>();
-            final show = miniPlayer.showMiniPlayer(audio, chant, practice);
+        return DeepMantraScaffold(
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: muhurta.themeGradient,
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Column(
+              children: [
+                _buildAppBar(l10n, muhurta, mantraProvider),
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(vertical: 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!hasPerspectiveFilter) ...[
+                          if (showRecommendations) ...[
+                            _buildRecommendedSection(
+                              mantraProvider,
+                              onboardingProvider,
+                              muhurta,
+                            ),
+                            SizedBox(height: 32.h),
+                          ],
 
-            return Scaffold(
-              body: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: muhurta.themeGradient,
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    _buildAppBar(l10n, muhurta, mantraProvider),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: EdgeInsets.symmetric(vertical: 20.h),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (!hasPerspectiveFilter) ...[
-                              if (showRecommendations) ...[
-                                _buildRecommendedSection(
-                                  mantraProvider,
-                                  onboardingProvider,
-                                  muhurta,
+                          // Category Grid Section
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: AppSizes.paddingLg,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "EXPLORE BY CATEGORY",
+                                  style: TextStyle(
+                                    color: muhurta.accentColor,
+                                    fontSize: AppSizes.fontXs,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2,
+                                  ),
                                 ),
-                                SizedBox(height: 32.h),
-                              ],
-
-                              // Category Grid Section
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "EXPLORE BY CATEGORY",
+                                if (mantraProvider.selectedCategory != 'All' ||
+                                    mantraProvider.selectedDeity != 'All')
+                                  TextButton(
+                                    onPressed: () =>
+                                        mantraProvider.clearFilters(),
+                                    child: Text(
+                                      "Clear",
                                       style: TextStyle(
                                         color: muhurta.accentColor,
-                                        fontSize: AppSizes.fontXs,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 2,
+                                        fontSize: AppSizes.fontSm,
                                       ),
                                     ),
-                                    if (mantraProvider.selectedCategory != 'All' ||
-                                        mantraProvider.selectedDeity != 'All')
-                                      TextButton(
-                                        onPressed: () =>
-                                            mantraProvider.clearFilters(),
-                                        child: Text(
-                                          "Clear",
-                                          style: TextStyle(
-                                            color: muhurta.accentColor,
-                                            fontSize: AppSizes.fontSm,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-                              _buildCategoryGrid(mantraProvider, muhurta),
-
-                              SizedBox(height: 32.h),
-                            ],
-
-                            if (widget.perspectiveType != null) ...[
-                              _buildPerspectiveChips(mantraProvider, muhurta),
-                              SizedBox(height: 24.h),
-                            ],
-
-                            // "Mantras for YOU" Section
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
-                              child: Text(
-                                widget.perspectiveType != null
-                                    ? "REVEALING ${mantraProvider.currentFilterValue.toUpperCase()}"
-                                    : (mantraProvider.selectedCategory == 'All'
-                                        ? "ALL MANTRAS"
-                                        : "${mantraProvider.selectedCategory.toUpperCase()} MANTRAS"),
-                                style: TextStyle(
-                                  color: muhurta.accentColor,
-                                  fontSize: AppSizes.fontXs,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 2,
-                                ),
-                              ),
+                                  ),
+                              ],
                             ),
-                            SizedBox(height: 16.h),
-                            _buildMantraGrid(mantraProvider, muhurta),
+                          ),
+                          SizedBox(height: 16.h),
+                          _buildCategoryGrid(mantraProvider, muhurta),
 
-                            SizedBox(height: show ? MiniPlayerProvider.height + 40.h : 40.h),
-                          ],
+                          SizedBox(height: 32.h),
+                        ],
+
+                        if (widget.perspectiveType != null) ...[
+                          _buildPerspectiveChips(mantraProvider, muhurta),
+                          SizedBox(height: 24.h),
+                        ],
+
+                        // "Mantras for YOU" Section
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppSizes.paddingLg,
+                          ),
+                          child: Text(
+                            widget.perspectiveType != null
+                                ? "REVEALING ${mantraProvider.currentFilterValue.toUpperCase()}"
+                                : (mantraProvider.selectedCategory == 'All'
+                                      ? "ALL MANTRAS"
+                                      : "${mantraProvider.selectedCategory.toUpperCase()} MANTRAS"),
+                            style: TextStyle(
+                              color: muhurta.accentColor,
+                              fontSize: AppSizes.fontXs,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 16.h),
+                        _buildMantraGrid(mantraProvider, muhurta),
+
+                        SizedBox(height: 40.h),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            );
-          },
+              ],
+            ),
+          ),
         );
       },
     );
@@ -240,10 +226,13 @@ class _MantraListScreenState extends State<MantraListScreen> {
     );
   }
 
-  Widget _buildPerspectiveChips(MantraProvider provider, MuhurtaProvider muhurta) {
+  Widget _buildPerspectiveChips(
+    MantraProvider provider,
+    MuhurtaProvider muhurta,
+  ) {
     List<String> options = [];
     String currentValue = '';
-    
+
     switch (widget.perspectiveType) {
       case 'deity':
         options = provider.deities;
@@ -299,13 +288,14 @@ class _MantraListScreenState extends State<MantraListScreen> {
               margin: EdgeInsets.only(right: 12.w),
               padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
               decoration: BoxDecoration(
-                color: isSelected 
-                    ? muhurta.accentColor 
-                    : (muhurta.isDarkPhase ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                color: isSelected
+                    ? muhurta.accentColor
+                    : (muhurta.isDarkPhase ? Colors.white : Colors.black)
+                          .withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(100.r),
                 border: Border.all(
-                  color: isSelected 
-                      ? Colors.white.withValues(alpha: 0.3) 
+                  color: isSelected
+                      ? Colors.white.withValues(alpha: 0.3)
                       : muhurta.accentColor.withValues(alpha: 0.2),
                   width: isSelected ? 2.0.w : 1.2.w,
                 ),
@@ -313,8 +303,8 @@ class _MantraListScreenState extends State<MantraListScreen> {
               child: Text(
                 option.toUpperCase(),
                 style: TextStyle(
-                  color: isSelected 
-                      ? Colors.white 
+                  color: isSelected
+                      ? Colors.white
                       : muhurta.primaryTextColor.withValues(alpha: 0.8),
                   fontSize: AppSizes.fontSm,
                   fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
@@ -330,24 +320,78 @@ class _MantraListScreenState extends State<MantraListScreen> {
 
   Widget _buildCategoryGrid(MantraProvider provider, MuhurtaProvider muhurta) {
     final List<String> availableCats = provider.categories;
-    
+
     final Map<String, Map<String, dynamic>> catData = {
-      'All': {'color': muhurta.accentColor, 'emoji': '✨', 'icon': Icons.grid_view_rounded},
-      'Wealth': {'color': Colors.amber, 'emoji': '💰', 'icon': Icons.account_balance_wallet_outlined},
-      'Career': {'color': Colors.blue, 'emoji': '🚀', 'icon': Icons.trending_up_rounded},
-      'Focus': {'color': Colors.indigo, 'emoji': '📚', 'icon': Icons.remove_red_eye_outlined},
-      'Relationships': {'color': Colors.pink, 'emoji': '❤️', 'icon': Icons.favorite_border_rounded},
-      'Harmony': {'color': Colors.lightGreen, 'emoji': '🕊', 'icon': Icons.auto_awesome_rounded},
-      'Peace': {'color': Colors.cyan, 'emoji': '🌿', 'icon': Icons.self_improvement_rounded},
-      'Stress Relief': {'color': Colors.deepPurple, 'emoji': '😌', 'icon': Icons.spa_outlined},
-      'Health': {'color': Colors.green, 'emoji': '🧘', 'icon': Icons.eco_outlined},
-      'Protection': {'color': Colors.orange, 'emoji': '🛡', 'icon': Icons.security_rounded},
-      'Wisdom': {'color': Colors.amber, 'emoji': '🕯', 'icon': Icons.lightbulb_outline},
-      'Spiritual Growth': {'color': Colors.purple, 'emoji': '🕉', 'icon': Icons.brightness_high_outlined},
+      'All': {
+        'color': muhurta.accentColor,
+        'emoji': '✨',
+        'icon': Icons.grid_view_rounded,
+      },
+      'Wealth': {
+        'color': Colors.amber,
+        'emoji': '💰',
+        'icon': Icons.account_balance_wallet_outlined,
+      },
+      'Career': {
+        'color': Colors.blue,
+        'emoji': '🚀',
+        'icon': Icons.trending_up_rounded,
+      },
+      'Focus': {
+        'color': Colors.indigo,
+        'emoji': '📚',
+        'icon': Icons.remove_red_eye_outlined,
+      },
+      'Relationships': {
+        'color': Colors.pink,
+        'emoji': '❤️',
+        'icon': Icons.favorite_border_rounded,
+      },
+      'Harmony': {
+        'color': Colors.lightGreen,
+        'emoji': '🕊',
+        'icon': Icons.auto_awesome_rounded,
+      },
+      'Peace': {
+        'color': Colors.cyan,
+        'emoji': '🌿',
+        'icon': Icons.self_improvement_rounded,
+      },
+      'Stress Relief': {
+        'color': Colors.deepPurple,
+        'emoji': '😌',
+        'icon': Icons.spa_outlined,
+      },
+      'Health': {
+        'color': Colors.green,
+        'emoji': '🧘',
+        'icon': Icons.eco_outlined,
+      },
+      'Protection': {
+        'color': Colors.orange,
+        'emoji': '🛡',
+        'icon': Icons.security_rounded,
+      },
+      'Wisdom': {
+        'color': Colors.amber,
+        'emoji': '🕯',
+        'icon': Icons.lightbulb_outline,
+      },
+      'Spiritual Growth': {
+        'color': Colors.purple,
+        'emoji': '🕉',
+        'icon': Icons.brightness_high_outlined,
+      },
     };
 
     final List<Map<String, dynamic>> categories = availableCats.map((name) {
-      final data = catData[name] ?? {'color': Colors.grey, 'emoji': '🕉', 'icon': Icons.category_outlined};
+      final data =
+          catData[name] ??
+          {
+            'color': Colors.grey,
+            'emoji': '🕉',
+            'icon': Icons.category_outlined,
+          };
       return {
         'name': name,
         'color': data['color'],
@@ -355,7 +399,6 @@ class _MantraListScreenState extends State<MantraListScreen> {
         'icon': data['icon'],
       };
     }).toList();
-
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
@@ -405,22 +448,19 @@ class _MantraListScreenState extends State<MantraListScreen> {
                         ),
                       ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 12.r, sigmaY: 12.r),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          themeColor.withValues(alpha: isSelected ? 0.4 : 0.2),
-                          (muhurta.isDarkPhase ? Colors.black : Colors.white)
-                              .withValues(alpha: isSelected ? 0.5 : 0.3),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                  gradient: LinearGradient(
+                    colors: [
+                      themeColor.withValues(alpha: isSelected ? 0.6 : 0.4),
+                      (muhurta.isDarkPhase ? Colors.black : Colors.white)
+                          .withValues(alpha: isSelected ? 0.7 : 0.5),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
                     child: Stack(
                       children: [
                         Positioned(
@@ -457,9 +497,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                               ),
                               SizedBox(height: 10.h),
                               Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 4.w,
-                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 4.w),
                                 child: Text(
                                   cat['name'].toUpperCase(),
                                   textAlign: TextAlign.center,
@@ -489,10 +527,8 @@ class _MantraListScreenState extends State<MantraListScreen> {
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            },
       ),
     );
   }
@@ -563,7 +599,6 @@ class _MantraListScreenState extends State<MantraListScreen> {
     );
   }
 
-
   Widget _buildAppBar(
     AppLocalizations l10n,
     MuhurtaProvider muhurta,
@@ -579,88 +614,84 @@ class _MantraListScreenState extends State<MantraListScreen> {
           alpha: 0.1,
         ),
       ),
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10.r, sigmaY: 10.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (widget.title != null) ...[
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new_rounded, color: muhurta.primaryTextColor, size: AppSizes.iconMd),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      SizedBox(width: 8.w),
-                    ],
-                    Text(
-                      widget.title ?? "Explore",
-                      style: GoogleFonts.playfairDisplay(
-                        color: muhurta.primaryTextColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: AppSizes.fontHeading1,
-                      ),
+                if (widget.title != null) ...[
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: muhurta.primaryTextColor,
+                      size: AppSizes.iconMd,
                     ),
-                    if (provider.isLoading)
-                      SizedBox(
-                        width: 20.w,
-                        height: 20.w,
-                        child: const CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10.r, sigmaY: 10.r),
-                    child: Container(
-                      height: 56.h,
-                      decoration: BoxDecoration(
-                        color: (muhurta.isDarkPhase ? Colors.white : Colors.black)
-                            .withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                        border: Border.all(
-                          color: muhurta.accentColor.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
-                      ),
-                      child: TextField(
-                        controller: _searchController,
-                        style: TextStyle(color: muhurta.primaryTextColor),
-                        decoration: InputDecoration(
-                          hintText: "Search mantras...",
-                          hintStyle: TextStyle(
-                            color: muhurta.secondaryTextColor.withValues(
-                              alpha: 0.5,
-                            ),
-                          ),
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: muhurta.secondaryTextColor,
-                            size: AppSizes.iconMd,
-                          ),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(Icons.clear, size: AppSizes.iconSm),
-                                  onPressed: () => _searchController.clear(),
-                                  color: muhurta.secondaryTextColor,
-                                )
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 16.h),
-                        ),
-                      ),
-                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  SizedBox(width: 8.w),
+                ],
+                Text(
+                  widget.title ?? "Explore",
+                  style: GoogleFonts.playfairDisplay(
+                    color: muhurta.primaryTextColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: AppSizes.fontHeading1,
                   ),
                 ),
+                if (provider.isLoading)
+                  SizedBox(
+                    width: 20.w,
+                    height: 20.w,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  ),
               ],
             ),
-          ),
+            SizedBox(height: 16.h),
+            Container(
+              height: 56.h,
+              decoration: BoxDecoration(
+                color: (muhurta.isDarkPhase ? Colors.white : Colors.black)
+                    .withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                border: Border.all(
+                  color: muhurta.accentColor.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: TextField(
+                controller: _searchController,
+                style: TextStyle(color: muhurta.primaryTextColor),
+                decoration: InputDecoration(
+                  hintText: "Search mantras...",
+                  hintStyle: TextStyle(
+                    color: muhurta.secondaryTextColor.withValues(
+                      alpha: 0.5,
+                    ),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: muhurta.secondaryTextColor,
+                    size: AppSizes.iconMd,
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.clear,
+                            size: AppSizes.iconSm,
+                          ),
+                          onPressed: () => _searchController.clear(),
+                          color: muhurta.secondaryTextColor,
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 16.h),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -676,9 +707,11 @@ class MantraGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => MantraDetailScreen(mantra: mantra)),
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => MantraSelectionBottomSheet(mantra: mantra),
         );
       },
       child: Container(
@@ -703,11 +736,10 @@ class MantraGridItem extends StatelessWidget {
                   errorBuilder: (context, error, stackTrace) {
                     final muhurta = context.read<MuhurtaProvider>();
                     return Container(
-                      color: muhurta.isDarkPhase ? AppColors.cosmicBlack : AppColors.sandalwoodLight,
-                      child: Icon(
-                        Icons.music_note,
-                        color: muhurta.accentColor,
-                      ),
+                      color: muhurta.isDarkPhase
+                          ? AppColors.cosmicBlack
+                          : AppColors.sandalwoodLight,
+                      child: Icon(Icons.music_note, color: muhurta.accentColor),
                     );
                   },
                 ),

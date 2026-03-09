@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_sizes.dart';
+import '../../../data/models/mantra_model.dart';
 import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/widgets/star_field_overlay.dart';
+import '../../mantra/providers/mantra_provider.dart';
 import '../providers/onboarding_provider.dart';
 import 'main_navigation_screen.dart';
 
@@ -23,11 +25,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late Animation<double> _contentFade;
 
   final Map<String, String> _deityAudioMap = {
-    'Shiv': 'assets/audio/shiv_mantra.mp3',
-    'Vishnu': 'assets/audio/vishnu_mantra.mp3',
-    'Ganesh': 'assets/audio/ganesha_mantra.mp3',
-    'Devi': 'assets/audio/lakshmi_mantra.mp3',
-    'Krishna': 'assets/audio/krishna_mantra.mp3',
+    'Shiv': 'assets/audio/shiv_mantra/Om Namah Shivaya.mp3',
+    'Vishnu': 'assets/audio/vishnu_mantra/Om Namo Bhagavate Vasudevaya.mp3',
+    'Ganesh': 'assets/audio/ganesha_mantra/Om Gam Ganapataye Namaha.mp3',
+    'Devi': 'assets/audio/lakshmi_mantra/Om Mahalaxmi Namo Namah.mp3',
+    'Krishna': 'assets/audio/krishna_mantra/Om Krishnaya Vasudevaya.mp3',
   };
 
   @override
@@ -42,6 +44,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       curve: Curves.easeIn,
     );
     _fadeController.forward();
+
+    // Pre-load mantras so we can match them during selection
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<MantraProvider>().loadMantras();
+      }
+    });
   }
 
   @override
@@ -52,8 +61,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   void _nextPage(OnboardingProvider provider) {
-    context.read<AudioPlayerProvider>().stop();
-
     if (provider.currentPage < 2) {
       _fadeController.reverse().then((_) {
         _pageController.nextPage(
@@ -68,7 +75,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   void _finishOnboarding() {
+    // Ensure any preloaded onboarding audio is fully cleared so that
+    // the global mini player does not appear on the home screen unless
+    // the user explicitly starts playback.
     context.read<AudioPlayerProvider>().stop();
+
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
@@ -143,7 +154,42 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               provider.setSelectedDeity(val);
                               final url = _deityAudioMap[val];
                               if (url != null) {
-                                audioProvider.playUrl(url);
+                                // Find the actual MantraModel for better player integration
+                                final mantras = context
+                                    .read<MantraProvider>()
+                                    .allMantras;
+
+                                // Try to find by URL first, then by deity name
+                                MantraModel? mantra;
+                                try {
+                                  mantra =
+                                      mantras
+                                          .where((m) => m.audioUrl == url)
+                                          .firstOrNull ??
+                                      mantras
+                                          .where(
+                                            (m) =>
+                                                m.deity.toLowerCase() ==
+                                                val.toLowerCase(),
+                                          )
+                                          .firstOrNull;
+                                } catch (_) {
+                                  // Fallback for older Dart versions if firstOrNull is missing
+                                  for (final m in mantras) {
+                                    if (m.audioUrl == url ||
+                                        m.deity.toLowerCase() ==
+                                            val.toLowerCase()) {
+                                      mantra = m;
+                                      break;
+                                    }
+                                  }
+                                }
+
+                                if (mantra != null) {
+                                  audioProvider.loadTrack(mantra);
+                                } else {
+                                  audioProvider.loadUrl(url);
+                                }
                               } else {
                                 audioProvider.stop();
                               }

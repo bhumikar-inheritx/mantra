@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../providers/mini_player_provider.dart';
+import '../widgets/deep_mantra_scaffold.dart';
 import 'home_screen.dart';
 import 'practice_tab_screen.dart';
 import 'profile_screen.dart';
@@ -30,37 +31,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    // Set initial offset for navigation screen
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MiniPlayerProvider>().setBottomOffset(
-        AppSizes.bottomNavBarHeight,
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    // Reset offset when leaving navigation screen (though it's usually the root)
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final totalOffset = AppSizes.bottomNavBarHeight + bottomPadding;
-
-    // Use addPostFrameCallback to avoid notifyListeners() during build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(totalOffset);
-      }
-    });
-
     return Consumer<MuhurtaProvider>(
       builder: (context, muhurta, child) {
-        return Scaffold(
+        return DeepMantraScaffold(
           body: _screens[_selectedIndex],
           bottomNavigationBar: Container(
             decoration: BoxDecoration(

@@ -8,10 +8,14 @@ class MiniPlayerProvider extends ChangeNotifier {
   static double get height => AppSizes.miniPlayerHeight;
   bool _isPracticeModeActive = false;
   bool _isForceHidden = false;
+  bool _isFullPlayerVisible = false;
+  bool _isExpanding = false;
   double _bottomOffset = 0.0;
 
   bool get isPracticeModeActive => _isPracticeModeActive;
   bool get isForceHidden => _isForceHidden;
+  bool get isFullPlayerVisible => _isFullPlayerVisible;
+  bool get isExpanding => _isExpanding;
   double get bottomOffset => _bottomOffset;
 
   bool showMiniPlayer(
@@ -19,13 +23,31 @@ class MiniPlayerProvider extends ChangeNotifier {
     AudioChantProvider chant,
     PracticeSessionProvider practice,
   ) {
-    if (_isForceHidden) return false;
+    if (_isForceHidden || _isFullPlayerVisible) return false;
     
     final bool isPracticing = chant.isPlaying ||
         chant.currentCount > 0 ||
         practice.isSessionActive;
-        
-    return audio.currentTrack != null && !isPracticing;
+    
+    // Only show the mini player when the global audio player is actively
+    // playing and no chanting/practice session is running. This avoids
+    // showing the bar on onboarding/home when audio is merely preloaded.
+    return audio.isPlaying && !isPracticing;
+  }
+
+  void setIsExpanding(bool expanding) {
+    if (_isExpanding != expanding) {
+      _isExpanding = expanding;
+      notifyListeners();
+    }
+  }
+
+  void setFullPlayerVisible(bool visible) {
+    if (_isFullPlayerVisible != visible) {
+      _isFullPlayerVisible = visible;
+      _isExpanding = false; // Reset expanding when visibility is confirmed
+      notifyListeners();
+    }
   }
 
   void setPracticeMode(bool isActive) {

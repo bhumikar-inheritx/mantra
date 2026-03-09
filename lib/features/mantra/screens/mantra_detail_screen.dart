@@ -3,209 +3,227 @@ import 'package:deep_mantra/core/theme/app_sizes.dart';
 import 'package:deep_mantra/data/models/mantra_model.dart';
 import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
 import 'package:deep_mantra/features/chanting/screens/chanting_mode_selection_screen.dart';
+import 'package:deep_mantra/features/dashboard/widgets/deep_mantra_scaffold.dart';
 import 'package:deep_mantra/shared/dialogs/sankalp_dialog.dart';
 import 'package:deep_mantra/shared/providers/audio_player_provider.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/dashboard/providers/mini_player_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
 import 'package:deep_mantra/shared/widgets/normal_media_player_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-class MantraDetailScreen extends StatelessWidget {
+import '../../dashboard/providers/mini_player_provider.dart';
+
+class MantraDetailScreen extends StatefulWidget {
   final MantraModel mantra;
 
   const MantraDetailScreen({super.key, required this.mantra});
 
   @override
+  State<MantraDetailScreen> createState() => _MantraDetailScreenState();
+}
+
+class _MantraDetailScreenState extends State<MantraDetailScreen> {
+  @override
   Widget build(BuildContext context) {
+    final mantra = widget.mantra;
     final muhurta = Provider.of<MuhurtaProvider>(context);
 
-    // Reset offset when in detail screen
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
-      }
-    });
-
-    return Consumer3<AudioPlayerProvider, AudioChantProvider, PracticeSessionProvider>(
-      builder: (context, audio, chant, practice, child) {
-        final miniPlayer = context.read<MiniPlayerProvider>();
-        final show = miniPlayer.showMiniPlayer(audio, chant, practice);
-
-        return Scaffold(
-          backgroundColor: muhurta.isDarkPhase
-              ? AppColors.surfaceDark
-              : AppColors.sandalwoodWhite,
-          appBar: AppBar(
-            title: Text(
-              mantra.title,
-              style: GoogleFonts.playfairDisplay(
-                fontWeight: FontWeight.bold,
-                fontSize: AppSizes.fontHeading2,
+    return DeepMantraScaffold(
+      backgroundColor: muhurta.isDarkPhase
+          ? AppColors.surfaceDark
+          : AppColors.sandalwoodWhite,
+      appBar: AppBar(
+        title: Text(
+          mantra.title,
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.bold,
+            fontSize: AppSizes.fontHeading2,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: muhurta.primaryTextColor,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Hero Image / Header
+            Container(
+              height: 250.h,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: muhurta.themeGradient,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.spa, size: 100.w, color: muhurta.accentColor),
+                    SizedBox(height: 16.h),
+                    Text(
+                      mantra.titleHindi,
+                      style: GoogleFonts.notoSansDevanagari(
+                        fontSize: 32.sp,
+                        color: muhurta.accentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            foregroundColor: muhurta.primaryTextColor,
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Hero Image / Header
-                Container(
-                  height: 250.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: muhurta.themeGradient,
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.spa, size: 100.w, color: muhurta.accentColor),
-                        SizedBox(height: 16.h),
-                        Text(
-                          mantra.titleHindi,
-                          style: GoogleFonts.notoSansDevanagari(
-                            fontSize: 32.sp,
-                            color: muhurta.accentColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
 
-                Padding(
-                  padding: EdgeInsets.all(AppSizes.paddingLg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: EdgeInsets.all(AppSizes.paddingLg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle("Sanskrit", muhurta),
+                  SizedBox(height: 8.h),
+                  Text(
+                    mantra.sanskritText,
+                    style: TextStyle(
+                      fontSize: AppSizes.fontHeading2,
+                      color: muhurta.primaryTextColor,
+                      fontFamily: 'serif',
+                    ),
+                  ),
+
+                  SizedBox(height: 24.h),
+                  _buildSectionTitle("Transliteration", muhurta),
+                  SizedBox(height: 8.h),
+                  Text(
+                    mantra.transliteration,
+                    style: TextStyle(
+                      fontSize: AppSizes.fontTitle,
+                      color: muhurta.secondaryTextColor,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+
+                  SizedBox(height: 24.h),
+                  _buildSectionTitle("Word-by-word Meaning", muhurta),
+                  SizedBox(height: 8.h),
+                  Text(
+                    mantra.meaning,
+                    style: TextStyle(
+                      fontSize: AppSizes.fontBody,
+                      color: muhurta.primaryTextColor,
+                    ),
+                  ),
+
+                  SizedBox(height: 24.h),
+                  _buildSectionTitle("Spiritual Benefits", muhurta),
+                  SizedBox(height: 8.h),
+                  Text(
+                    mantra.benefits,
+                    style: TextStyle(
+                      fontSize: AppSizes.fontBody,
+                      color: muhurta.primaryTextColor,
+                    ),
+                  ),
+
+                  SizedBox(height: 24.h),
+                  _buildSectionTitle("Ideal Time & Count", muhurta),
+                  SizedBox(height: 8.h),
+                  Row(
                     children: [
-                      _buildSectionTitle("Sanskrit", muhurta),
-                      SizedBox(height: 8.h),
+                      Icon(
+                        Icons.access_time,
+                        color: muhurta.accentColor,
+                        size: AppSizes.iconSm,
+                      ),
+                      SizedBox(width: 8.w),
                       Text(
-                        mantra.sanskritText,
+                        mantra.idealTime,
                         style: TextStyle(
-                          fontSize: AppSizes.fontHeading2,
                           color: muhurta.primaryTextColor,
-                          fontFamily: 'serif',
-                        ),
-                      ),
-
-                      SizedBox(height: 24.h),
-                      _buildSectionTitle("Transliteration", muhurta),
-                      SizedBox(height: 8.h),
-                      Text(
-                        mantra.transliteration,
-                        style: TextStyle(
-                          fontSize: AppSizes.fontTitle,
-                          color: muhurta.secondaryTextColor,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-
-                      SizedBox(height: 24.h),
-                      _buildSectionTitle("Word-by-word Meaning", muhurta),
-                      SizedBox(height: 8.h),
-                      Text(
-                        mantra.meaning,
-                        style: TextStyle(
                           fontSize: AppSizes.fontBody,
-                          color: muhurta.primaryTextColor,
                         ),
                       ),
-
-                      SizedBox(height: 24.h),
-                      _buildSectionTitle("Spiritual Benefits", muhurta),
-                      SizedBox(height: 8.h),
+                      SizedBox(width: 24.w),
+                      Icon(
+                        Icons.repeat,
+                        color: muhurta.accentColor,
+                        size: AppSizes.iconSm,
+                      ),
+                      SizedBox(width: 8.w),
                       Text(
-                        mantra.benefits,
+                        "${mantra.recommendedCount} Reps",
                         style: TextStyle(
-                          fontSize: AppSizes.fontBody,
                           color: muhurta.primaryTextColor,
+                          fontSize: AppSizes.fontBody,
                         ),
                       ),
+                    ],
+                  ),
 
-                      SizedBox(height: 24.h),
-                      _buildSectionTitle("Ideal Time & Count", muhurta),
-                      SizedBox(height: 8.h),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time,
-                            color: muhurta.accentColor,
-                            size: AppSizes.iconSm,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            mantra.idealTime,
-                            style: TextStyle(
-                              color: muhurta.primaryTextColor,
-                              fontSize: AppSizes.fontBody,
-                            ),
-                          ),
-                          SizedBox(width: 24.w),
-                          Icon(
-                            Icons.repeat,
-                            color: muhurta.accentColor,
-                            size: AppSizes.iconSm,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            "${mantra.recommendedCount} Reps",
-                            style: TextStyle(
-                              color: muhurta.primaryTextColor,
-                              fontSize: AppSizes.fontBody,
-                            ),
-                          ),
-                        ],
+                  SizedBox(height: 24.h),
+                  Wrap(
+                    spacing: 8.w,
+                    runSpacing: 8.h,
+                    children: [
+                      _buildInfoChip(mantra.deity, Icons.auto_awesome, muhurta),
+                      if (mantra.zodiac.isNotEmpty)
+                        _buildInfoChip(
+                          mantra.zodiac.first,
+                          Icons.vibration,
+                          muhurta,
+                        ),
+                      if (mantra.planet.isNotEmpty)
+                        _buildInfoChip(
+                          mantra.planet.first,
+                          Icons.public,
+                          muhurta,
+                        ),
+                      _buildInfoChip(
+                        mantra.trackType,
+                        Icons.music_note,
+                        muhurta,
                       ),
+                    ],
+                  ),
 
-                      SizedBox(height: 24.h),
-                      Wrap(
-                        spacing: 8.w,
-                        runSpacing: 8.h,
-                        children: [
-                          _buildInfoChip(mantra.deity, Icons.auto_awesome, muhurta),
-                          if (mantra.zodiac.isNotEmpty)
-                            _buildInfoChip(
-                              mantra.zodiac.first,
-                              Icons.vibration,
-                              muhurta,
-                            ),
-                          if (mantra.planet.isNotEmpty)
-                            _buildInfoChip(
-                              mantra.planet.first,
-                              Icons.public,
-                              muhurta,
-                            ),
-                          _buildInfoChip(
-                            mantra.trackType,
-                            Icons.music_note,
-                            muhurta,
-                          ),
-                        ],
+                  SizedBox(height: 48.h),
+                  Column(
+                    children: [
+                      Divider(
+                        color: muhurta.accentColor.withValues(alpha: 0.1),
+                        height: 48.h,
                       ),
-
-                      SizedBox(height: 48.h),
+                      Text(
+                        "BEGIN YOUR RITUAL",
+                        style: TextStyle(
+                          color: muhurta.accentColor,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
                       Row(
                         children: [
                           Expanded(
-                            child: OutlinedButton(
-                              onPressed: () {
+                            child: _buildPlayActionTile(
+                              context: context,
+                              title: "Listen",
+                              icon: Icons.headphones_rounded,
+                              muhurta: muhurta,
+                              onTap: () {
+                                context
+                                    .read<MiniPlayerProvider>()
+                                    .setFullPlayerVisible(true);
+
                                 final audioProvider = context
                                     .read<AudioPlayerProvider>();
                                 audioProvider.playTrack(mantra);
-
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -214,30 +232,18 @@ class MantraDetailScreen extends StatelessWidget {
                                   ),
                                 );
                               },
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: muhurta.accentColor),
-                                foregroundColor: muhurta.accentColor,
-                                padding: EdgeInsets.symmetric(vertical: 16.h),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppSizes.radiusMd,
-                                  ),
-                                ),
-                              ),
-                              child: Text(
-                                "JUST LISTEN",
-                                style: TextStyle(
-                                  fontSize: AppSizes.fontSm,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                             ),
                           ),
                           if (mantra.usageType == 'jaapSupported') ...[
-                            SizedBox(width: 16.w),
+                            SizedBox(width: 12.w),
                             Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
+                              child: _buildPlayActionTile(
+                                context: context,
+                                title: "Practice",
+                                icon: Icons.vibration_rounded,
+                                muhurta: muhurta,
+                                isPrimary: true,
+                                onTap: () {
                                   showDialog(
                                     context: context,
                                     builder: (context) => SankalpDialog(
@@ -247,7 +253,6 @@ class MantraDetailScreen extends StatelessWidget {
                                         session.selectMantra(mantra);
                                         session.setSankalp(mantra.title);
                                         session.setTargetCount(target);
-
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -261,27 +266,6 @@ class MantraDetailScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: muhurta.accentColor,
-                                  foregroundColor: muhurta.onAccentColor,
-                                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      AppSizes.radiusMd,
-                                    ),
-                                  ),
-                                  elevation: 8,
-                                  shadowColor: muhurta.accentColor.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                                child: Text(
-                                  "PRACTICE",
-                                  style: TextStyle(
-                                    fontSize: AppSizes.fontSm,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
                               ),
                             ),
                           ],
@@ -289,13 +273,13 @@ class MantraDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-                SizedBox(height: show ? MiniPlayerProvider.height + 40.h : 40.h),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            SizedBox(height: 40.h),
+          ],
+        ),
+      ),
     );
   }
 
@@ -307,6 +291,53 @@ class MantraDetailScreen extends StatelessWidget {
         fontSize: AppSizes.fontBody,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildPlayActionTile({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required MuhurtaProvider muhurta,
+    required VoidCallback onTap,
+    bool isPrimary = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: isPrimary
+              ? muhurta.accentColor
+              : muhurta.accentColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          border: Border.all(
+            color: isPrimary
+                ? muhurta.accentColor
+                : muhurta.accentColor.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isPrimary ? Colors.white : muhurta.accentColor,
+              size: 20.w,
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              title.toUpperCase(),
+              style: TextStyle(
+                color: isPrimary ? Colors.white : muhurta.accentColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 13.sp,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

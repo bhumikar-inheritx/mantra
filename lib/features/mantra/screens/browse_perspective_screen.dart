@@ -1,14 +1,11 @@
-import 'package:deep_mantra/features/dashboard/providers/mini_player_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dart';
-import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
-import 'package:deep_mantra/shared/providers/audio_player_provider.dart';
+import 'package:deep_mantra/core/theme/app_sizes.dart';
+import 'package:deep_mantra/features/mantra/providers/mantra_provider.dart';
+import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:deep_mantra/core/theme/app_sizes.dart';
-import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
-import 'package:deep_mantra/features/mantra/providers/mantra_provider.dart';
+
 import 'mantra_list_screen.dart';
 
 class BrowsePerspectiveScreen extends StatelessWidget {
@@ -61,77 +58,73 @@ class BrowsePerspectiveScreen extends StatelessWidget {
       },
     ];
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: muhurta.themeGradient,
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: muhurta.themeGradient,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        child: SafeArea(
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(AppSizes.paddingLg, AppSizes.paddingLg, AppSizes.paddingLg, 32.h),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Sacred Library",
-                        style: GoogleFonts.playfairDisplay(
-                          color: muhurta.primaryTextColor,
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+      ),
+      child: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                AppSizes.paddingLg,
+                AppSizes.paddingLg,
+                AppSizes.paddingLg,
+                32.h,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Sacred Library",
+                      style: GoogleFonts.playfairDisplay(
+                        color: muhurta.primaryTextColor,
+                        fontSize: 40.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        "CHOOSE YOUR PERSPECTIVE",
-                        style: TextStyle(
-                          color: muhurta.accentColor,
-                          fontSize: AppSizes.fontXs,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      "CHOOSE YOUR PERSPECTIVE",
+                      style: TextStyle(
+                        color: muhurta.accentColor,
+                        fontSize: AppSizes.fontXs,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
-                sliver: SliverGrid(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 20.h,
-                    crossAxisSpacing: 20.w,
-                    childAspectRatio: 0.85,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final p = perspectives[index];
-                      return _buildPremiumPerspectiveCard(context, p, muhurta, index);
-                    },
-                    childCount: perspectives.length,
-                  ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 20.h,
+                  crossAxisSpacing: 20.w,
+                  childAspectRatio: 0.85,
                 ),
-              ),
-              Consumer3<AudioPlayerProvider, AudioChantProvider, PracticeSessionProvider>(
-                builder: (context, audio, chant, practice, _) {
-                  final miniPlayer = context.read<MiniPlayerProvider>();
-                  final show = miniPlayer.showMiniPlayer(audio, chant, practice);
-                  return SliverToBoxAdapter(
-                    child: SizedBox(height: show ? MiniPlayerProvider.height + 40.h : 40.h),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final p = perspectives[index];
+                  return _buildPremiumPerspectiveCard(
+                    context,
+                    p,
+                    muhurta,
+                    index,
                   );
-                },
+                }, childCount: perspectives.length),
               ),
-            ],
-          ),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 8.h)),
+          ],
         ),
       ),
     );
@@ -152,17 +145,14 @@ class BrowsePerspectiveScreen extends StatelessWidget {
       builder: (context, value, child) {
         return Transform.translate(
           offset: Offset(0, 50.h * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: GestureDetector(
         onTap: () {
           final mantraProvider = context.read<MantraProvider>();
           mantraProvider.clearFilters();
-          
+
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -190,10 +180,7 @@ class BrowsePerspectiveScreen extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
                 ),
                 // Overlay Gradient
                 Positioned.fill(

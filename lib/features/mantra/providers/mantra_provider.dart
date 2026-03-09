@@ -14,6 +14,8 @@ class MantraProvider extends ChangeNotifier {
   String _selectedTrackType = 'All';
   String _searchQuery = '';
 
+  List<MantraModel> get allMantras => _mantras;
+
   List<MantraModel> get mantras {
     return _mantras.where((m) {
       final matchesCategory = _selectedCategory == 'All' || m.category == _selectedCategory;

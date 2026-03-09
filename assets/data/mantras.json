@@ -8,7 +8,7 @@
         "translation": "I bow to Shiva",
         "meaning": "Panchakshara Mantra representing the five elements and the inner self.",
         "benefits": "Mental peace, clarity, and spiritual protection.",
-        "imageUrl": "assets/images/shiva.png",
+        "imageUrl": "assets/images/shiva.jpg",
         "audioUrl": "assets/audio/shiv_mantra/Om Namah Shivaya.mp3",
         "category": "Protection",
         "chakras": [
@@ -38,7 +38,7 @@
         "translation": "Universal prayer for enlightenment",
         "meaning": "Vedic prayer for spiritual awakening and wisdom.",
         "benefits": "Intellectual growth, radiance, and purity.",
-        "imageUrl": "assets/images/gayatri.png",
+        "imageUrl": "assets/images/gayatri.jpg",
         "audioUrl": "assets/audio/gayatri_mantra/Gayatri Mantra.mp3",
         "category": "Wisdom",
         "chakras": [
@@ -150,7 +150,7 @@
         "translation": "We worship the three-eyed Lord Shiva",
         "meaning": "The great death-conquering mantra for longevity.",
         "benefits": "Health, vitality, and protection from ailments.",
-        "imageUrl": "assets/images/shiva.png",
+        "imageUrl": "assets/images/shiva.jpg",
         "audioUrl": "assets/audio/shiv_mantra/Maha Mrityunjaya.mp3",
         "category": "Health",
         "chakras": [

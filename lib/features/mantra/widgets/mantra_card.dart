@@ -3,6 +3,7 @@ import 'package:deep_mantra/core/theme/app_sizes.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/mantra_model.dart';
+import 'package:deep_mantra/features/mantra/widgets/mantra_selection_bottom_sheet.dart';
 import '../screens/mantra_detail_screen.dart';
 
 class MantraCard extends StatelessWidget {
@@ -14,11 +15,11 @@ class MantraCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => MantraDetailScreen(mantra: mantra),
-          ),
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => MantraSelectionBottomSheet(mantra: mantra),
         );
       },
       child: Container(

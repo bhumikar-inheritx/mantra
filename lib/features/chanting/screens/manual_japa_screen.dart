@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import '../../dashboard/providers/mini_player_provider.dart';
 import '../widgets/chakra_widget.dart';
 import '../widgets/digital_mala_widget.dart';
 import 'practice_summary_screen.dart';
@@ -38,13 +37,6 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
     final session = Provider.of<PracticeSessionProvider>(context);
     final manual = Provider.of<ManualJapaProvider>(context);
     final mantra = session.selectedMantra;
-
-    // Reset offset for standalone practice screen
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
-      }
-    });
 
     return Scaffold(
       body: Container(

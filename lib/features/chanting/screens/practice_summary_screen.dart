@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../../dashboard/providers/dashboard_provider.dart';
-import '../../dashboard/providers/mini_player_provider.dart';
 import '../providers/practice_session_provider.dart';
 
 class PracticeSummaryScreen extends StatefulWidget {
@@ -39,17 +38,16 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Reset offset for standalone summary screen
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
-      }
-    });
-
     final muhurta = Provider.of<MuhurtaProvider>(context);
 
-    return Scaffold(
-      body: Container(
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          context.read<PracticeSessionProvider>().resetSession();
+        }
+      },
+      child: Scaffold(
+        body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -310,6 +308,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

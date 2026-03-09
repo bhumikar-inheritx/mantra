@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_sizes.dart';
-
 import '../../../data/models/mantra_model.dart';
+import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../models/chanting_session_model.dart';
-import '../providers/practice_session_provider.dart';
 import '../providers/manual_japa_provider.dart';
-import '../../dashboard/providers/mini_player_provider.dart';
+import '../providers/practice_session_provider.dart';
 import 'audio_loop_practice_screen.dart';
 import 'manual_japa_screen.dart';
-import 'practice_summary_screen.dart';
 
 class ChantingModeSelectionScreen extends StatelessWidget {
   final MantraModel mantra;
@@ -26,13 +24,6 @@ class ChantingModeSelectionScreen extends StatelessWidget {
       context,
       listen: false,
     );
-
-    // Reset offset for standalone screen
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        context.read<MiniPlayerProvider>().setBottomOffset(0.0);
-      }
-    });
 
     return Scaffold(
       body: Container(
@@ -114,7 +105,11 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                 const Spacer(),
 
                 IconButton(
-                  icon: Icon(Icons.close, color: muhurta.secondaryTextColor, size: AppSizes.iconMd),
+                  icon: Icon(
+                    Icons.close,
+                    color: muhurta.secondaryTextColor,
+                    size: AppSizes.iconMd,
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
                 SizedBox(height: 24.h),
@@ -136,7 +131,13 @@ class ChantingModeSelectionScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        // Ensure global audio playback is stopped when entering a
+        // dedicated practice/chanting mode so there is only ever
+        // one active audio source.
+        context.read<AudioPlayerProvider>().stop();
+        onTap();
+      },
       child: Container(
         padding: EdgeInsets.all(AppSizes.paddingLg),
         decoration: BoxDecoration(
@@ -157,7 +158,11 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                 color: muhurta.accentColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: muhurta.accentColor, size: AppSizes.iconLg),
+              child: Icon(
+                icon,
+                color: muhurta.accentColor,
+                size: AppSizes.iconLg,
+              ),
             ),
             SizedBox(width: 20.w),
             Expanded(
