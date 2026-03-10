@@ -1,5 +1,6 @@
 import 'package:deep_mantra/core/theme/app_sizes.dart';
 import 'package:deep_mantra/features/mantra/providers/mantra_provider.dart';
+import 'package:deep_mantra/localization/app_localizations.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,43 +15,44 @@ class BrowsePerspectiveScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final List<Map<String, dynamic>> perspectives = [
       {
-        'title': 'Deity',
-        'subtitle': 'Divine Forms',
+        'title': l10n.translate('deity'),
+        'subtitle': l10n.translate('divine_forms'),
         'icon': Icons.auto_awesome_rounded,
         'color': Colors.amber,
         'type': 'deity',
         'image': 'assets/images/perspectives/deity.png',
       },
       {
-        'title': 'Benefit',
-        'subtitle': 'Healing Vibes',
+        'title': l10n.translate('benefit'),
+        'subtitle': l10n.translate('healing_vibes'),
         'icon': Icons.spa_rounded,
         'color': Colors.green,
         'type': 'category',
         'image': 'assets/images/perspectives/benefit.png',
       },
       {
-        'title': 'Zodiac',
-        'subtitle': 'Star Alignment',
+        'title': l10n.translate('zodiac'),
+        'subtitle': l10n.translate('star_alignment'),
         'icon': Icons.vibration_rounded,
         'color': Colors.deepPurple,
         'type': 'zodiac',
         'image': 'assets/images/perspectives/zodiac.png',
       },
       {
-        'title': 'Planet',
-        'subtitle': 'Celestial Power',
+        'title': l10n.translate('planet'),
+        'subtitle': l10n.translate('celestial_power'),
         'icon': Icons.public_rounded,
         'color': Colors.blue,
         'type': 'planet',
         'image': 'assets/images/perspectives/planet.png',
       },
       {
-        'title': 'Type',
-        'subtitle': 'Sacred Genres',
+        'title': l10n.translate('type'),
+        'subtitle': l10n.translate('sacred_genres'),
         'icon': Icons.library_music_rounded,
         'color': Colors.orange,
         'type': 'trackType',
@@ -82,7 +84,7 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Sacred Library",
+                      l10n.translate("sacred_library"),
                       style: GoogleFonts.playfairDisplay(
                         color: muhurta.primaryTextColor,
                         fontSize: 40.sp,
@@ -91,7 +93,7 @@ class BrowsePerspectiveScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      "CHOOSE YOUR PERSPECTIVE",
+                      l10n.translate("choose_perspective").toUpperCase(),
                       style: TextStyle(
                         color: muhurta.accentColor,
                         fontSize: AppSizes.fontXs,

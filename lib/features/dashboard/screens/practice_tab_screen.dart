@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 
 import 'package:deep_mantra/features/mantra/widgets/mantra_selection_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_sizes.dart';
 import '../../../data/models/mantra_model.dart';
+import '../../../localization/app_localizations.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../../mantra/providers/mantra_provider.dart';
 
@@ -16,6 +17,7 @@ class PracticeTabScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final muhurta = Provider.of<MuhurtaProvider>(context);
     final mantraProvider = Provider.of<MantraProvider>(context);
 
@@ -34,17 +36,17 @@ class PracticeTabScreen extends StatelessWidget {
       ),
       child: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(muhurta),
+          _buildSliverAppBar(muhurta, l10n),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.all(AppSizes.paddingLg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSpotlight(context, practiceMantras, muhurta),
+                  _buildSpotlight(context, practiceMantras, muhurta, l10n),
                   SizedBox(height: 32.h),
                   Text(
-                    "CHOOSE YOUR PRACTICE",
+                    l10n.translate("choose_your_practice"),
                     style: TextStyle(
                       color: muhurta.accentColor,
                       fontSize: AppSizes.fontXs,
@@ -78,7 +80,7 @@ class PracticeTabScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSliverAppBar(MuhurtaProvider muhurta) {
+  Widget _buildSliverAppBar(MuhurtaProvider muhurta, AppLocalizations l10n) {
     return SliverAppBar(
       expandedHeight: 120.h,
       floating: true,
@@ -91,7 +93,7 @@ class PracticeTabScreen extends StatelessWidget {
           bottom: AppSizes.paddingMd,
         ),
         title: Text(
-          "Sadhana",
+          l10n.translate("sadhana"),
           style: GoogleFonts.playfairDisplay(
             color: muhurta.primaryTextColor,
             fontWeight: FontWeight.bold,
@@ -106,6 +108,7 @@ class PracticeTabScreen extends StatelessWidget {
     BuildContext context,
     List<MantraModel> mantras,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     if (mantras.isEmpty) return const SizedBox();
     final featured = mantras.first;
@@ -137,7 +140,7 @@ class PracticeTabScreen extends StatelessWidget {
               ),
               SizedBox(width: 8.w),
               Text(
-                "RECOMMENDED PRACTICE",
+                l10n.translate("recommended_practice"),
                 style: TextStyle(
                   color: muhurta.accentColor,
                   fontSize: AppSizes.fontXs,
@@ -149,7 +152,7 @@ class PracticeTabScreen extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           Text(
-            featured.title,
+            l10n.isHindi ? featured.titleHindi : featured.title,
             style: GoogleFonts.playfairDisplay(
               fontSize: AppSizes.fontHeading2,
               fontWeight: FontWeight.bold,
@@ -187,7 +190,7 @@ class PracticeTabScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 12.h),
               child: Text(
-                "START SESSION",
+                l10n.translate("start_session"),
                 style: TextStyle(fontSize: AppSizes.fontSm),
               ),
             ),
@@ -206,6 +209,7 @@ class _PracticeGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return GestureDetector(
       onTap: () {
@@ -242,7 +246,7 @@ class _PracticeGridItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                mantra.title,
+                l10n.isHindi ? mantra.titleHindi : mantra.title,
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

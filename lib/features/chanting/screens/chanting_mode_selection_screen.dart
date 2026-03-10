@@ -7,6 +7,7 @@ import '../../../data/models/mantra_model.dart';
 import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../models/chanting_session_model.dart';
+import '../../../localization/app_localizations.dart';
 import '../providers/manual_japa_provider.dart';
 import '../providers/practice_session_provider.dart';
 import 'audio_loop_practice_screen.dart';
@@ -20,6 +21,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
     final sessionProvider = Provider.of<PracticeSessionProvider>(
       context,
       listen: false,
@@ -43,7 +45,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
               children: [
                 SizedBox(height: 48.h),
                 Text(
-                  "Choose Your Path",
+                  l10n.translate("choose_your_path"),
                   style: TextStyle(
                     color: muhurta.primaryTextColor,
                     fontSize: AppSizes.fontHeading1,
@@ -52,7 +54,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "How would you like to practice today?",
+                  l10n.translate("practice_today_prompt"),
                   style: TextStyle(
                     color: muhurta.secondaryTextColor,
                     fontSize: AppSizes.fontBody,
@@ -62,8 +64,9 @@ class ChantingModeSelectionScreen extends StatelessWidget {
 
                 _buildModeCard(
                   context,
-                  title: "Guided Audio Loop",
-                  description: "Listen and sync with an automated audio cycle.",
+                  title: l10n.translate("guided_audio_loop"),
+                  description: l10n.translate("guided_audio_desc"),
+                  l10n: l10n,
                   icon: Icons.graphic_eq_rounded,
                   mode: ChantMode.audio,
                   muhurta: muhurta,
@@ -82,8 +85,9 @@ class ChantingModeSelectionScreen extends StatelessWidget {
 
                 _buildModeCard(
                   context,
-                  title: "Manual Japa (Mala)",
-                  description: "A tactile experience. Tap to count each bead.",
+                  title: l10n.translate("manual_japa"),
+                  description: l10n.translate("manual_japa_desc"),
+                  l10n: l10n,
                   icon: Icons.touch_app_rounded,
                   mode: ChantMode.manual,
                   muhurta: muhurta,
@@ -128,6 +132,7 @@ class ChantingModeSelectionScreen extends StatelessWidget {
     required IconData icon,
     required ChantMode mode,
     required MuhurtaProvider muhurta,
+    required AppLocalizations l10n,
     required VoidCallback onTap,
   }) {
     return GestureDetector(

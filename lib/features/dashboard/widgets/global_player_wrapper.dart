@@ -14,46 +14,6 @@ class GlobalMiniPlayerWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Stack(
-        children: [
-          child,
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Builder(
-              builder: (context) {
-                final audio = context.read<AudioPlayerProvider>();
-                final chant = context.watch<AudioChantProvider>();
-                final practice = context.watch<PracticeSessionProvider>();
-                final miniPlayer = context.watch<MiniPlayerProvider>();
-
-                // We use context.select for the most frequent state (audio track)
-                // but actually, after the provider fix, this will already be much faster.
-                // Let's use context.select for the track specifically.
-                final hasTrack = context.select<AudioPlayerProvider, bool>(
-                  (p) => p.currentTrack != null,
-                );
-
-                final bool shouldShow = miniPlayer.showMiniPlayer(
-                  audio,
-                  chant,
-                  practice,
-                ) && hasTrack;
-
-                if (!shouldShow) return const SizedBox.shrink();
-
-                return Padding(
-                  padding: EdgeInsets.only(bottom: miniPlayer.bottomOffset),
-                  child: const DeepMantraMiniPlayer(),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    return child;
   }
 }

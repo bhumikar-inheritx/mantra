@@ -4,6 +4,7 @@ import 'package:deep_mantra/shared/providers/sankalp_provider.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:deep_mantra/core/theme/app_colors.dart';
 import 'package:deep_mantra/core/theme/app_sizes.dart';
+import 'package:deep_mantra/localization/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SankalpDialog extends StatefulWidget {
@@ -33,6 +34,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
     return Consumer<SankalpProvider>(
       builder: (context, provider, child) {
         bool isCustom = !provider.targets.contains(provider.selectedTarget);
@@ -56,7 +58,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
               SizedBox(height: 16.h),
               Center(
                 child: Text(
-                  'SET YOUR SANKALP',
+                  l10n.translate('set_your_sankalp').toUpperCase(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: muhurta.accentColor,
@@ -68,7 +70,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
               ),
               SizedBox(height: 32.h),
               Text(
-                'Repetitions',
+                l10n.translate('repetitions'),
                 style: TextStyle(color: muhurta.secondaryTextColor, fontWeight: FontWeight.bold, fontSize: AppSizes.fontSm),
               ),
               SizedBox(height: 12.h),
@@ -120,7 +122,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                         border: Border.all(color: AppColors.templeGold.withValues(alpha: 0.3)),
                       ),
                       child: Text(
-                        "Custom",
+                        l10n.translate("custom"),
                         style: TextStyle(
                           color: isCustom ? muhurta.onAccentColor : muhurta.primaryTextColor,
                           fontWeight: FontWeight.bold,
@@ -139,7 +141,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                   autofocus: true,
                   style: TextStyle(color: muhurta.primaryTextColor),
                   decoration: InputDecoration(
-                    hintText: "Enter custom count",
+                    hintText: l10n.translate("enter_custom_count"),
                     hintStyle: TextStyle(color: muhurta.secondaryTextColor.withValues(alpha: 0.5)),
                     filled: true,
                     fillColor: muhurta.accentColor.withValues(alpha: 0.05),
@@ -161,7 +163,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                   onPressed: () {
                     if (provider.selectedTarget <= 0) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please enter a valid count")),
+                        SnackBar(content: Text(l10n.translate("valid_count_error"))),
                       );
                       return;
                     }
@@ -174,7 +176,7 @@ class _SankalpDialogState extends State<SankalpDialog> {
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
                   ),
-                  child: Text('IGNITE SANKALP', style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppSizes.fontBody)),
+                  child: Text(l10n.translate('ignite_sankalp').toUpperCase(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: AppSizes.fontBody)),
                 ),
               ),
             ],

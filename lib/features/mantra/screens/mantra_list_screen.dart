@@ -87,6 +87,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                               mantraProvider,
                               onboardingProvider,
                               muhurta,
+                              l10n,
                             ),
                             SizedBox(height: 32.h),
                           ],
@@ -100,7 +101,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "EXPLORE BY CATEGORY",
+                                  l10n.translate("explore_by_category"),
                                   style: TextStyle(
                                     color: muhurta.accentColor,
                                     fontSize: AppSizes.fontXs,
@@ -114,7 +115,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                                     onPressed: () =>
                                         mantraProvider.clearFilters(),
                                     child: Text(
-                                      "Clear",
+                                      l10n.translate("clear"),
                                       style: TextStyle(
                                         color: muhurta.accentColor,
                                         fontSize: AppSizes.fontSm,
@@ -124,14 +125,12 @@ class _MantraListScreenState extends State<MantraListScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 16.h),
-                          _buildCategoryGrid(mantraProvider, muhurta),
-
+                          _buildCategoryGrid(mantraProvider, muhurta, l10n),
                           SizedBox(height: 32.h),
                         ],
 
                         if (widget.perspectiveType != null) ...[
-                          _buildPerspectiveChips(mantraProvider, muhurta),
+                          _buildPerspectiveChips(mantraProvider, muhurta, l10n),
                           SizedBox(height: 24.h),
                         ],
 
@@ -142,10 +141,10 @@ class _MantraListScreenState extends State<MantraListScreen> {
                           ),
                           child: Text(
                             widget.perspectiveType != null
-                                ? "REVEALING ${mantraProvider.currentFilterValue.toUpperCase()}"
+                                ? "${l10n.translate('revealing')} ${l10n.translate(mantraProvider.currentFilterValue.toLowerCase()).toUpperCase()}"
                                 : (mantraProvider.selectedCategory == 'All'
-                                      ? "ALL MANTRAS"
-                                      : "${mantraProvider.selectedCategory.toUpperCase()} MANTRAS"),
+                                      ? l10n.translate("all_mantras")
+                                      : "${l10n.translate(mantraProvider.selectedCategory.toLowerCase()).toUpperCase()} ${l10n.translate('mantras').toUpperCase()}"),
                             style: TextStyle(
                               color: muhurta.accentColor,
                               fontSize: AppSizes.fontXs,
@@ -155,7 +154,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                           ),
                         ),
                         SizedBox(height: 16.h),
-                        _buildMantraGrid(mantraProvider, muhurta),
+                        _buildMantraGrid(mantraProvider, muhurta, l10n),
 
                         SizedBox(height: 40.h),
                       ],
@@ -174,6 +173,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
     MantraProvider mantraProvider,
     OnboardingProvider onboarding,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     // Filter mantras that match user's deity or goal
     final recommended = mantraProvider.mantras.where((m) {
@@ -196,7 +196,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
           child: Text(
-            "RECOMMENDED FOR YOU",
+            l10n.translate("recommended_mantra").toUpperCase(),
             style: TextStyle(
               color: muhurta.accentColor,
               fontSize: AppSizes.fontXs,
@@ -229,6 +229,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
   Widget _buildPerspectiveChips(
     MantraProvider provider,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     List<String> options = [];
     String currentValue = '';
@@ -301,7 +302,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                 ),
               ),
               child: Text(
-                option.toUpperCase(),
+                l10n.translate(option.toLowerCase()).toUpperCase(),
                 style: TextStyle(
                   color: isSelected
                       ? Colors.white
@@ -318,7 +319,11 @@ class _MantraListScreenState extends State<MantraListScreen> {
     );
   }
 
-  Widget _buildCategoryGrid(MantraProvider provider, MuhurtaProvider muhurta) {
+  Widget _buildCategoryGrid(
+    MantraProvider provider,
+    MuhurtaProvider muhurta,
+    AppLocalizations l10n,
+  ) {
     final List<String> availableCats = provider.categories;
 
     final Map<String, Map<String, dynamic>> catData = {
@@ -499,7 +504,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                               Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 4.w),
                                 child: Text(
-                                  cat['name'].toUpperCase(),
+                                  l10n.translate(cat['name'].toString().toLowerCase()).toUpperCase(),
                                   textAlign: TextAlign.center,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -533,7 +538,11 @@ class _MantraListScreenState extends State<MantraListScreen> {
     );
   }
 
-  Widget _buildMantraGrid(MantraProvider provider, MuhurtaProvider muhurta) {
+  Widget _buildMantraGrid(
+    MantraProvider provider,
+    MuhurtaProvider muhurta,
+    AppLocalizations l10n,
+  ) {
     if (provider.isLoading) {
       return Center(
         child: Padding(
@@ -558,7 +567,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
               ),
               SizedBox(height: 16.h),
               Text(
-                "No mantras found matching your criteria.",
+                l10n.translate("no_mantras_found"),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: muhurta.secondaryTextColor),
               ),
@@ -569,7 +578,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                   provider.setCategory('All');
                 },
                 child: Text(
-                  "Clear All Filters",
+                  l10n.translate("clear_all_filters"),
                   style: TextStyle(color: muhurta.accentColor),
                 ),
               ),
@@ -634,7 +643,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                   SizedBox(width: 8.w),
                 ],
                 Text(
-                  widget.title ?? "Explore",
+                  widget.title ?? l10n.translate("explore_mantras"),
                   style: GoogleFonts.playfairDisplay(
                     color: muhurta.primaryTextColor,
                     fontWeight: FontWeight.bold,
@@ -665,7 +674,7 @@ class _MantraListScreenState extends State<MantraListScreen> {
                 controller: _searchController,
                 style: TextStyle(color: muhurta.primaryTextColor),
                 decoration: InputDecoration(
-                  hintText: "Search mantras...",
+                   hintText: l10n.translate("search_mantras"),
                   hintStyle: TextStyle(
                     color: muhurta.secondaryTextColor.withValues(
                       alpha: 0.5,

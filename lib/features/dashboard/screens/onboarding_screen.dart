@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../data/models/mantra_model.dart';
@@ -9,7 +10,6 @@ import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/widgets/star_field_overlay.dart';
 import '../../mantra/providers/mantra_provider.dart';
 import '../providers/onboarding_provider.dart';
-import 'main_navigation_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -75,22 +75,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   void _finishOnboarding() {
-    // Ensure any preloaded onboarding audio is fully cleared so that
-    // the global mini player does not appear on the home screen unless
-    // the user explicitly starts playback.
+    // Ensure any preloaded onboarding audio is fully cleared
     context.read<AudioPlayerProvider>().stop();
 
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const MainNavigationScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 1000),
-      ),
-    );
+    // Mark onboarding as complete to trigger AuthWrapper rebuild
+    context.read<AuthProvider>().completeOnboarding();
   }
 
   @override
@@ -307,8 +296,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         imagePath = 'assets/images/shiv_image.jpg';
     }
 
-    return Container(
-      height: 420.h,
+    return SizedBox(
+      height: 380.h,
       width: double.infinity,
       child: Stack(
         fit: StackFit.expand,
@@ -322,7 +311,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   image: AssetImage(imagePath),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.4),
+                    Colors.black.withValues(alpha: 0.4),
                     BlendMode.darken,
                   ),
                 ),
@@ -333,8 +322,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.cosmicDeep.withOpacity(0.0),
-                  AppColors.cosmicDeep.withOpacity(0.4),
+                  AppColors.cosmicDeep.withValues(alpha: 0.0),
+                  AppColors.cosmicDeep.withValues(alpha: 0.4),
                   AppColors.cosmicDeep,
                 ],
                 begin: Alignment.topCenter,
@@ -352,7 +341,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.luxuryGold.withOpacity(0.15),
+                    AppColors.luxuryGold.withValues(alpha: 0.15),
                     Colors.transparent,
                   ],
                   center: const Alignment(0, 1),
@@ -391,7 +380,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: AppColors.luxuryGold.withOpacity(0.3),
+                        color: AppColors.luxuryGold.withValues(alpha: 0.3),
                         blurRadius: 10,
                         spreadRadius: 1,
                       ),
@@ -455,19 +444,21 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.luxuryGold.withOpacity(0.1)
-                          : Colors.white.withOpacity(0.03),
+                          ? AppColors.luxuryGold.withValues(alpha: 0.1)
+                          : Colors.white.withValues(alpha: 0.03),
                       borderRadius: BorderRadius.circular(AppSizes.radiusLg),
                       border: Border.all(
                         color: isSelected
-                            ? AppColors.luxuryGold.withOpacity(0.5)
+                            ? AppColors.luxuryGold.withValues(alpha: 0.5)
                             : Colors.white12,
                         width: 1.w,
                       ),
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: AppColors.luxuryGold.withOpacity(0.1),
+                                color: AppColors.luxuryGold.withValues(
+                                  alpha: 0.1,
+                                ),
                                 blurRadius: 15,
                                 spreadRadius: 2,
                               ),

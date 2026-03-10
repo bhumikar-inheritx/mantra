@@ -10,6 +10,7 @@ import '../../data/models/mantra_model.dart';
 import '../../features/dashboard/providers/mini_player_provider.dart';
 import '../providers/audio_player_provider.dart';
 import '../providers/muhurta_provider.dart';
+import '../../../localization/app_localizations.dart';
 
 class NormalMediaPlayerScreen extends StatefulWidget {
   final MantraModel track;
@@ -52,6 +53,7 @@ class _NormalMediaPlayerScreenState extends State<NormalMediaPlayerScreen> {
     final accentColor = context.select<MuhurtaProvider, Color>(
       (p) => p.accentColor,
     );
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
@@ -139,7 +141,7 @@ class _NormalMediaPlayerScreenState extends State<NormalMediaPlayerScreen> {
 
                     // Track Info
                     Text(
-                      widget.track.title.toUpperCase(),
+                      (l10n.isHindi ? widget.track.titleHindi : widget.track.title).toUpperCase(),
                       textAlign: TextAlign.center,
                       style: GoogleFonts.playfairDisplay(
                         fontSize: AppSizes.fontHeading2,
@@ -150,7 +152,7 @@ class _NormalMediaPlayerScreenState extends State<NormalMediaPlayerScreen> {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      widget.track.deity,
+                      l10n.translate(widget.track.deity.toLowerCase()),
                       style: TextStyle(
                         fontSize: AppSizes.fontTitle,
                         color: Colors.white.withValues(alpha: 0.7),

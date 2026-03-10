@@ -10,13 +10,11 @@ class MiniPlayerProvider extends ChangeNotifier {
   bool _isForceHidden = false;
   bool _isFullPlayerVisible = false;
   bool _isExpanding = false;
-  double _bottomOffset = 0.0;
 
   bool get isPracticeModeActive => _isPracticeModeActive;
   bool get isForceHidden => _isForceHidden;
   bool get isFullPlayerVisible => _isFullPlayerVisible;
   bool get isExpanding => _isExpanding;
-  double get bottomOffset => _bottomOffset;
 
   bool showMiniPlayer(
     AudioPlayerProvider audio,
@@ -64,12 +62,6 @@ class MiniPlayerProvider extends ChangeNotifier {
     }
   }
 
-  void setBottomOffset(double offset) {
-    if (_bottomOffset != offset) {
-      _bottomOffset = offset;
-      notifyListeners();
-    }
-  }
 
   void show() {
     setPracticeMode(false);

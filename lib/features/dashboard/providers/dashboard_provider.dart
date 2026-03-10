@@ -18,9 +18,12 @@ class DashboardProvider extends ChangeNotifier {
   
   SpiritualInsight _currentInsight = const SpiritualInsight(
     title: "Inner Peace",
+    titleHindi: "आंतरिक शांति",
     verse: "अशान्तस्य कुतः सुखम्।",
     translation: "For one who is not peaceful, how can there be happiness?",
+    translationHindi: "अशांत व्यक्ति को सुख कहाँ मिल सकता है?",
     context: "Prioritize your inner stillness above all external goals.",
+    contextHindi: "सभी बाहरी लक्ष्यों से ऊपर अपनी आंतरिक स्थिरता को प्राथमिकता दें।",
   );
 
   int get streak => _streak;

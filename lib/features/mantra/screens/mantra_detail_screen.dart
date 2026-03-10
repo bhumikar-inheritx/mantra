@@ -8,6 +8,7 @@ import 'package:deep_mantra/shared/dialogs/sankalp_dialog.dart';
 import 'package:deep_mantra/shared/providers/audio_player_provider.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:deep_mantra/shared/widgets/normal_media_player_screen.dart';
+import 'package:deep_mantra/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,6 +30,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
   Widget build(BuildContext context) {
     final mantra = widget.mantra;
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return DeepMantraScaffold(
       backgroundColor: muhurta.isDarkPhase
@@ -36,7 +38,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
           : AppColors.sandalwoodWhite,
       appBar: AppBar(
         title: Text(
-          mantra.title,
+          l10n.isHindi ? mantra.titleHindi : mantra.title,
           style: GoogleFonts.playfairDisplay(
             fontWeight: FontWeight.bold,
             fontSize: AppSizes.fontHeading2,
@@ -85,7 +87,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle("Sanskrit", muhurta),
+                  _buildSectionTitle(l10n.translate("sanskrit"), muhurta),
                   SizedBox(height: 8.h),
                   Text(
                     mantra.sanskritText,
@@ -97,7 +99,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                   ),
 
                   SizedBox(height: 24.h),
-                  _buildSectionTitle("Transliteration", muhurta),
+                  _buildSectionTitle(l10n.translate("transliteration_label"), muhurta),
                   SizedBox(height: 8.h),
                   Text(
                     mantra.transliteration,
@@ -109,7 +111,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                   ),
 
                   SizedBox(height: 24.h),
-                  _buildSectionTitle("Word-by-word Meaning", muhurta),
+                  _buildSectionTitle(l10n.translate("meaning_word_by_word"), muhurta),
                   SizedBox(height: 8.h),
                   Text(
                     mantra.meaning,
@@ -120,7 +122,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                   ),
 
                   SizedBox(height: 24.h),
-                  _buildSectionTitle("Spiritual Benefits", muhurta),
+                  _buildSectionTitle(l10n.translate("spiritual_benefits"), muhurta),
                   SizedBox(height: 8.h),
                   Text(
                     mantra.benefits,
@@ -131,7 +133,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                   ),
 
                   SizedBox(height: 24.h),
-                  _buildSectionTitle("Ideal Time & Count", muhurta),
+                  _buildSectionTitle(l10n.translate("ideal_time_count"), muhurta),
                   SizedBox(height: 8.h),
                   Row(
                     children: [
@@ -156,7 +158,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                       ),
                       SizedBox(width: 8.w),
                       Text(
-                        "${mantra.recommendedCount} Reps",
+                        "${mantra.recommendedCount} ${l10n.translate("reps_label")}",
                         style: TextStyle(
                           color: muhurta.primaryTextColor,
                           fontSize: AppSizes.fontBody,
@@ -170,21 +172,21 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                     spacing: 8.w,
                     runSpacing: 8.h,
                     children: [
-                      _buildInfoChip(mantra.deity, Icons.auto_awesome, muhurta),
+                      _buildInfoChip(l10n.translate(mantra.deity.toLowerCase()), Icons.auto_awesome, muhurta),
                       if (mantra.zodiac.isNotEmpty)
                         _buildInfoChip(
-                          mantra.zodiac.first,
+                          l10n.translate(mantra.zodiac.first.toLowerCase()),
                           Icons.vibration,
                           muhurta,
                         ),
                       if (mantra.planet.isNotEmpty)
                         _buildInfoChip(
-                          mantra.planet.first,
+                          l10n.translate(mantra.planet.first.toLowerCase()),
                           Icons.public,
                           muhurta,
                         ),
                       _buildInfoChip(
-                        mantra.trackType,
+                        l10n.translate(mantra.trackType.toLowerCase()),
                         Icons.music_note,
                         muhurta,
                       ),
@@ -199,7 +201,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                         height: 48.h,
                       ),
                       Text(
-                        "BEGIN YOUR RITUAL",
+                        l10n.translate("begin_your_ritual"),
                         style: TextStyle(
                           color: muhurta.accentColor,
                           fontSize: 10.sp,
@@ -213,7 +215,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                           Expanded(
                             child: _buildPlayActionTile(
                               context: context,
-                              title: "Listen",
+                              title: l10n.translate("listen"),
                               icon: Icons.headphones_rounded,
                               muhurta: muhurta,
                               onTap: () {
@@ -239,7 +241,7 @@ class _MantraDetailScreenState extends State<MantraDetailScreen> {
                             Expanded(
                               child: _buildPlayActionTile(
                                 context: context,
-                                title: "Practice",
+                                title: l10n.translate("practice"),
                                 icon: Icons.vibration_rounded,
                                 muhurta: muhurta,
                                 isPrimary: true,

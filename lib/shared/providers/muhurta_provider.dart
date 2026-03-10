@@ -20,9 +20,9 @@ class MuhurtaProvider extends ChangeNotifier {
 
   TimePhase get currentPhase => _currentPhase;
 
-  String get greeting => "Namaste";
+  String get greeting => "namaste";
 
-  String get phaseDescription => "Divine Presence";
+  String get phaseDescription => "divine_presence";
 
   List<Color> get themeGradient => [
     AppColors.sandalwoodWhite,

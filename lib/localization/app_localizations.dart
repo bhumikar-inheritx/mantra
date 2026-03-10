@@ -29,6 +29,9 @@ class AppLocalizations {
   String translate(String key) {
     return _localizedStrings[key] ?? key;
   }
+
+  bool get isHindi => locale.languageCode == 'hi';
+  bool get isEnglish => locale.languageCode == 'en';
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

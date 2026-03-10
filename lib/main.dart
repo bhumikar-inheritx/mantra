@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
+
 import 'features/chanting/providers/audio_chant_provider.dart';
 import 'features/chanting/providers/manual_japa_provider.dart';
 import 'features/chanting/providers/practice_session_provider.dart';
@@ -18,6 +19,7 @@ import 'features/dashboard/providers/quick_ritual_provider.dart';
 import 'features/dashboard/screens/splash_screen.dart';
 import 'features/dashboard/widgets/global_player_wrapper.dart';
 import 'features/mantra/providers/mantra_provider.dart';
+import 'core/providers/auth_provider.dart';
 import 'localization/app_localizations.dart';
 import 'localization/locale_provider.dart';
 import 'shared/providers/audio_player_provider.dart';
@@ -72,6 +74,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(
           create: (context) => AudioPlayerProvider(globalAudioService),
         ),

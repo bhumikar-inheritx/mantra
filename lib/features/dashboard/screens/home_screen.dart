@@ -69,9 +69,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20.h),
-                      _buildPersonalGreeting(muhurta),
+                      _buildPersonalGreeting(muhurta, l10n),
                       SizedBox(height: 20.h),
-                      _buildQuoteCarousel(dashboard, muhurta),
+                      _buildQuoteCarousel(dashboard, muhurta, l10n),
                       SizedBox(height: 32.h),
                       _buildSectionHeader(
                         l10n.translate('recommended_mantra'),
@@ -84,9 +84,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                         muhurta,
+                        l10n,
                       ),
                       SizedBox(height: 16.h),
-                      _buildMantraSpotlight(mantraProvider),
+                      _buildMantraSpotlight(mantraProvider, l10n),
                       SizedBox(height: 32.h),
                       _buildQuickRituals(context, l10n, muhurta),
                       SizedBox(height: 40.h),
@@ -144,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPersonalGreeting(MuhurtaProvider muhurta) {
+  Widget _buildPersonalGreeting(MuhurtaProvider muhurta, AppLocalizations l10n) {
     return Row(
       children: [
         Stack(
@@ -177,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              muhurta.greeting,
+              l10n.translate(muhurta.greeting),
               style: TextStyle(
                 color: muhurta.accentColor,
                 fontSize: AppSizes.fontBody,
@@ -186,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              "Deepak Sharma",
+              l10n.translate("default_username"),
               style: TextStyle(
                 color: muhurta.primaryTextColor,
                 fontWeight: FontWeight.bold,
@@ -201,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
               child: Text(
-                muhurta.phaseDescription.toUpperCase(),
+                l10n.translate(muhurta.phaseDescription).toUpperCase(),
                 style: TextStyle(
                   color: muhurta.accentColor,
                   fontSize: AppSizes.fontXs,
@@ -215,10 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
   Widget _buildQuoteCarousel(
     DashboardProvider dashboard,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     final insight = dashboard.dailyInsight;
 
@@ -254,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "SPIRITUAL PRESCRIPTION",
+                l10n.isHindi ? insight.titleHindi : insight.title,
                 style: TextStyle(
                   color: muhurta.accentColor,
                   fontSize: AppSizes.fontXs,
@@ -275,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 12.h),
               Text(
-                insight.translation,
+                l10n.isHindi ? insight.translationHindi : insight.translation,
                 style: TextStyle(
                   color: muhurta.primaryTextColor,
                   fontSize: AppSizes.fontBody,
@@ -300,8 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
-                      child: Text(
-                        insight.context,
+                        child: Text(
+                        l10n.isHindi ? insight.contextHindi : insight.context,
                         style: TextStyle(
                           color: muhurta.secondaryTextColor,
                           fontSize: AppSizes.fontSm,
@@ -322,6 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String title,
     VoidCallback onSeeAll,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -337,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
         TextButton(
           onPressed: onSeeAll,
           child: Text(
-            "See All",
+            l10n.translate('see_all'),
             style: TextStyle(
               color: muhurta.accentColor,
               fontSize: AppSizes.fontSm,
@@ -348,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMantraSpotlight(MantraProvider provider) {
+  Widget _buildMantraSpotlight(MantraProvider provider, AppLocalizations l10n) {
     if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -380,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "TODAY'S SELECTION",
+            l10n.translate('todays_selection'),
             style: TextStyle(
               color: Colors.white70,
               fontSize: AppSizes.fontXs,
@@ -390,7 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 12.h),
           Text(
-            featured.title,
+            l10n.isHindi ? featured.titleHindi : featured.title,
             style: TextStyle(
               color: Colors.white,
               fontSize: 26.sp,
@@ -399,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 4.h),
           Text(
-            featured.category,
+            l10n.translate(featured.category.toLowerCase()),
             style: TextStyle(
               color: Colors.white70,
               fontSize: AppSizes.fontBody,
@@ -430,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 vertical: 8.h,
               ),
               child: Text(
-                "START NOW",
+                l10n.translate('start_now'),
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: AppSizes.fontSm,
@@ -460,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "QUICK RITUALS",
+          l10n.translate('quick_rituals'),
           style: TextStyle(
             color: AppColors.earthyGrey,
             fontSize: AppSizes.fontSm,
@@ -471,10 +473,10 @@ class _HomeScreenState extends State<HomeScreen> {
         SizedBox(height: 16.h),
         Row(
           children: [
-            _buildRitualIcon(Icons.timer_outlined, "Morning", muhurta, () => handleRitualTap(QuickRitualType.morning)),
-            _buildRitualIcon(Icons.self_improvement, "Peace", muhurta, () => handleRitualTap(QuickRitualType.peace)),
-            _buildRitualIcon(Icons.shield_outlined, "Protection", muhurta, () => handleRitualTap(QuickRitualType.protection)),
-            _buildRitualIcon(Icons.nightlight_outlined, "Sleep", muhurta, () => handleRitualTap(QuickRitualType.sleep)),
+            _buildRitualIcon(Icons.timer_outlined, l10n.translate("morning"), muhurta, () => handleRitualTap(QuickRitualType.morning)),
+            _buildRitualIcon(Icons.self_improvement, l10n.translate("peace"), muhurta, () => handleRitualTap(QuickRitualType.peace)),
+            _buildRitualIcon(Icons.shield_outlined, l10n.translate("protection"), muhurta, () => handleRitualTap(QuickRitualType.protection)),
+            _buildRitualIcon(Icons.nightlight_outlined, l10n.translate("sleep"), muhurta, () => handleRitualTap(QuickRitualType.sleep)),
           ],
         ),
       ],

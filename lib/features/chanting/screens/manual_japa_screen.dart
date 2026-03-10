@@ -5,6 +5,7 @@ import 'package:deep_mantra/features/chanting/providers/practice_session_provide
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:deep_mantra/localization/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
     final muhurta = Provider.of<MuhurtaProvider>(context);
     final session = Provider.of<PracticeSessionProvider>(context);
     final manual = Provider.of<ManualJapaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
     final mantra = session.selectedMantra;
 
     return Scaffold(
@@ -66,7 +68,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                         color: muhurta.primaryTextColor,
                         size: AppSizes.iconMd,
                       ),
-                      onPressed: () => _showExitConfirmation(context),
+                      onPressed: () => _showExitConfirmation(context, l10n),
                     ),
                     Text(
                       session.sessionDuration.formatMMSS(),
@@ -127,7 +129,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "TAP",
+                          l10n.translate("tap").toUpperCase(),
                           style: TextStyle(
                             color: muhurta.secondaryTextColor.withValues(
                               alpha: 0.5,
@@ -138,7 +140,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                           ),
                         ),
                         Text(
-                          "TO COUNT",
+                          l10n.translate("to_count").toUpperCase(),
                           style: TextStyle(
                             color: muhurta.secondaryTextColor.withValues(
                               alpha: 0.5,
@@ -161,13 +163,13 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildStatColumn("REPS", "${manual.totalReps}", muhurta),
+                    _buildStatColumn(l10n.translate("reps").toUpperCase(), "${manual.totalReps}", muhurta),
                     if (mantra?.chakras.isNotEmpty ?? false)
                       ChakraWidget(
                         chakraName: mantra!.chakras.first,
                         isActive: true,
                       ),
-                    _buildStatColumn("CYCLE", "${manual.cycleCount}", muhurta),
+                    _buildStatColumn(l10n.translate("cycle").toUpperCase(), "${manual.cycleCount}", muhurta),
                   ],
                 ),
               ),
@@ -175,7 +177,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
               SizedBox(height: 32.h),
 
               // Active Sankalp Badge
-              _buildSankalpBadge(muhurta, session.selectedSankalp),
+              _buildSankalpBadge(muhurta, session.selectedSankalp, l10n),
 
               SizedBox(height: 40.h),
 
@@ -213,7 +215,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
     );
   }
 
-  Widget _buildSankalpBadge(MuhurtaProvider muhurta, String? sankalp) {
+  Widget _buildSankalpBadge(MuhurtaProvider muhurta, String? sankalp, AppLocalizations l10n) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: AppSizes.paddingMd,
@@ -234,7 +236,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
           ),
           SizedBox(width: 8.w),
           Text(
-            "INTENTION: ${sankalp?.toUpperCase() ?? 'ACTIVE'}",
+            "${l10n.translate('intention').toUpperCase()}: ${sankalp?.toUpperCase() ?? l10n.translate('active').toUpperCase()}",
             style: TextStyle(
               color: muhurta.primaryTextColor,
               fontSize: AppSizes.fontSm,
@@ -247,7 +249,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
     );
   }
 
-  void _showExitConfirmation(BuildContext context) {
+  void _showExitConfirmation(BuildContext context, AppLocalizations l10n) {
     final session = context.read<PracticeSessionProvider>();
     final manual = context.read<ManualJapaProvider>();
 
@@ -263,18 +265,18 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
           title: Text(
-            "Finish Session?",
+            l10n.translate("finish_session_title"),
             style: TextStyle(color: m.primaryTextColor),
           ),
           content: Text(
-            "Would you like to stop and save your progress?",
+            l10n.translate("finish_session_desc"),
             style: TextStyle(color: m.secondaryTextColor),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-                "CANCEL",
+                l10n.translate("cancel"),
                 style: TextStyle(color: m.secondaryTextColor),
               ),
             ),
@@ -288,7 +290,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
               onPressed: () {
                 final finalCount = manual.currentCount;
                 final duration = session.sessionDuration;
-                final mantraTitle = session.selectedMantra?.title ?? "Mantra";
+                final mantraTitle = session.selectedMantra?.title ?? l10n.translate("mantra_fallback");
 
                 Navigator.pop(dialogContext); // Close dialog
 
@@ -304,7 +306,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
                 );
               },
               child: Text(
-                "FINISH",
+                l10n.translate("finish"),
                 style: TextStyle(
                   color: m.onAccentColor,
                   fontWeight: FontWeight.bold,

@@ -45,7 +45,7 @@ class SadhanaScreen extends StatelessWidget {
                         muhurta: muhurta,
                       ),
                       SizedBox(height: 32.h),
-                      _buildConsistencyMessage(dashboard, muhurta),
+                      _buildConsistencyMessage(dashboard, muhurta, l10n),
                     ],
                   ),
                 ),
@@ -71,7 +71,7 @@ class SadhanaScreen extends StatelessWidget {
           bottom: 16.h,
         ),
         title: Text(
-          "My Sadhana",
+          l10n.translate("my_sadhana"),
           style: TextStyle(
             color: muhurta.primaryTextColor,
             fontWeight: FontWeight.bold,
@@ -158,6 +158,7 @@ class SadhanaScreen extends StatelessWidget {
   Widget _buildConsistencyMessage(
     DashboardProvider dashboard,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     return Container(
       padding: EdgeInsets.all(AppSizes.paddingLg),
@@ -175,7 +176,7 @@ class SadhanaScreen extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           Text(
-            "Every chant builds your spiritual protection. Your consistency is your strength.",
+            l10n.translate("consistency_message"),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: muhurta.primaryTextColor,

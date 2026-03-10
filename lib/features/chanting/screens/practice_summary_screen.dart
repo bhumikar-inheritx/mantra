@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_sizes.dart';
 import '../../../shared/providers/muhurta_provider.dart';
 import '../../dashboard/providers/dashboard_provider.dart';
+import 'package:deep_mantra/localization/app_localizations.dart';
 import '../providers/practice_session_provider.dart';
 
 class PracticeSummaryScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
@@ -80,7 +82,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                 ),
                 SizedBox(height: 24.h),
                 Text(
-                  "Sadhana Complete",
+                  l10n.translate("sadhana_complete"),
                   style: GoogleFonts.playfairDisplay(
                     fontSize: AppSizes.fontHeading1,
                     fontWeight: FontWeight.bold,
@@ -89,7 +91,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "May the vibrations of this practice stay with you.",
+                  l10n.translate("sadhana_blessing"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: muhurta.secondaryTextColor,
@@ -103,7 +105,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                   children: [
                     _buildStatCard(
                       context,
-                      "CHANTS",
+                      l10n.translate("chants_small"),
                       "${widget.finalCount}",
                       Icons.repeat,
                       muhurta,
@@ -111,7 +113,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                     SizedBox(width: 16.w),
                     _buildStatCard(
                       context,
-                      "TOTAL TIME",
+                      l10n.translate("total_time_small"),
                       widget.duration.formatMMSS(),
                       Icons.access_time,
                       muhurta,
@@ -151,7 +153,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "PRACTICED",
+                              l10n.translate("practiced_small"),
                               style: TextStyle(
                                 fontSize: AppSizes.fontXs,
                                 fontWeight: FontWeight.bold,
@@ -179,7 +181,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "HOW DO YOU FEEL NOW?",
+                    l10n.translate("feel_now_prompt"),
                     style: TextStyle(
                       color: muhurta.accentColor,
                       fontSize: AppSizes.fontSm,
@@ -227,7 +229,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              _moods[index]['label'],
+                              l10n.translate(_moods[index]['label'].toString().toLowerCase()),
                               style: TextStyle(
                                 fontSize: AppSizes.fontXs,
                                 color: isSelected
@@ -249,7 +251,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                   maxLines: 3,
                   style: TextStyle(color: muhurta.primaryTextColor),
                   decoration: InputDecoration(
-                    hintText: "Add a note to your practice (optional)...",
+                    hintText: l10n.translate("reflection_hint"),
                     hintStyle: TextStyle(
                       color: muhurta.secondaryTextColor.withValues(alpha: 0.5),
                     ),
@@ -295,7 +297,7 @@ class _PracticeSummaryScreenState extends State<PracticeSummaryScreen> {
                       elevation: 8,
                     ),
                     child: Text(
-                      "FINISH & SAVE PROGRESS",
+                      l10n.translate("finish_save_progress"),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: AppSizes.fontTitle,

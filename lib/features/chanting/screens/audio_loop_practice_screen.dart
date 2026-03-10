@@ -4,6 +4,7 @@ import 'package:deep_mantra/features/chanting/providers/audio_chant_provider.dar
 import 'package:deep_mantra/features/chanting/providers/practice_session_provider.dart';
 import 'package:deep_mantra/shared/providers/muhurta_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:deep_mantra/localization/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +37,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
     final session = Provider.of<PracticeSessionProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
@@ -57,9 +59,9 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              _buildHeader(context, session, muhurta),
+              _buildHeader(context, session, muhurta, l10n),
               const Spacer(),
-              _buildProgressCircle(muhurta),
+              _buildProgressCircle(muhurta, l10n),
               SizedBox(height: 24.h),
               Text(
                 session.sessionDuration.formatMMSS(),
@@ -85,6 +87,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
     BuildContext context,
     PracticeSessionProvider session,
     MuhurtaProvider muhurta,
+    AppLocalizations l10n,
   ) {
     return Padding(
       padding: EdgeInsets.all(AppSizes.paddingLg),
@@ -97,12 +100,12 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
               color: muhurta.primaryTextColor,
               size: AppSizes.iconMd,
             ),
-            onPressed: () => _showExitConfirmation(context),
+            onPressed: () => _showExitConfirmation(context, l10n),
           ),
           Column(
             children: [
               Text(
-                session.selectedMantra?.title ?? "Mantra",
+                session.selectedMantra?.title ?? l10n.translate("mantra_fallback"),
                 style: TextStyle(
                   color: muhurta.primaryTextColor,
                   fontSize: AppSizes.fontTitle,
@@ -110,7 +113,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                 ),
               ),
               Text(
-                "GUIDED AUDIO",
+                l10n.translate("guided_audio_small"),
                 style: TextStyle(
                   color: muhurta.accentColor,
                   fontSize: AppSizes.fontXs,
@@ -125,7 +128,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
     );
   }
 
-  void _showExitConfirmation(BuildContext context) {
+  void _showExitConfirmation(BuildContext context, AppLocalizations l10n) {
     final session = context.read<PracticeSessionProvider>();
     final audio = context.read<AudioChantProvider>();
 
@@ -141,18 +144,18 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
             borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
           title: Text(
-            "Finish Session?",
+            l10n.translate("finish_session_title"),
             style: TextStyle(color: m.primaryTextColor),
           ),
           content: Text(
-            "Would you like to stop and save your progress?",
+            l10n.translate("finish_session_desc"),
             style: TextStyle(color: m.secondaryTextColor),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
               child: Text(
-                "CANCEL",
+                l10n.translate("cancel"),
                 style: TextStyle(color: m.secondaryTextColor),
               ),
             ),
@@ -166,7 +169,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
               onPressed: () {
                 final finalCount = audio.currentCount;
                 final duration = session.sessionDuration;
-                final mantraTitle = session.selectedMantra?.title ?? "Mantra";
+                final mantraTitle = session.selectedMantra?.title ?? l10n.translate("mantra_fallback");
 
                 // Stop audio
                 audio.stop();
@@ -185,7 +188,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                 );
               },
               child: Text(
-                "FINISH",
+                l10n.translate("finish"),
                 style: TextStyle(
                   color: m.onAccentColor,
                   fontWeight: FontWeight.bold,
@@ -198,7 +201,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
     );
   }
 
-  Widget _buildProgressCircle(MuhurtaProvider muhurta) {
+  Widget _buildProgressCircle(MuhurtaProvider muhurta, AppLocalizations l10n) {
     return Consumer<AudioChantProvider>(
       builder: (context, audio, child) {
         final bool isJustListen = audio.targetCount <= 0;
@@ -276,7 +279,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
                     ),
                   ),
                   child: Text(
-                    isJustListen ? "CONTINUOUS" : "OF ${audio.targetCount}",
+                    isJustListen ? l10n.translate("continuous").toUpperCase() : "${l10n.translate("of").toUpperCase()} ${audio.targetCount}",
                     style: TextStyle(
                       color: muhurta.accentColor,
                       fontSize: AppSizes.fontSm,

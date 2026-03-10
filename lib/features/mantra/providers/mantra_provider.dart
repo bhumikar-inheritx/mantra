@@ -93,7 +93,7 @@ class MantraProvider extends ChangeNotifier {
       final List<dynamic> data = json.decode(response);
       _mantras = data.map((json) => MantraModel.fromJson(json)).toList();
     } catch (e) {
-      _errorMessage = "Failed to load mantras: ${e.toString()}";
+      _errorMessage = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();

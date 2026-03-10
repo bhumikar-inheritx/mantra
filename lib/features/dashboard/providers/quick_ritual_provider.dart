@@ -33,29 +33,29 @@ class QuickRitualProvider extends ChangeNotifier {
   // Ritual Data mapping
   final Map<QuickRitualType, RitualData> _ritualDataMap = {
     QuickRitualType.morning: RitualData(
-      title: "Morning Awakening",
-      quote: "Breathe in the new day. Let go of yesterday.",
+      title: "morning_awakening",
+      quote: "morning_quote",
       durationSeconds: 3 * 60,
       primaryColor: const Color(0xFFFDB813), // Sun yellow
       secondaryColor: const Color(0xFFFF8C00), // Orange
     ),
     QuickRitualType.peace: RitualData(
-      title: "Inner Peace",
-      quote: "Find stillness in the breath. You are safe.",
+      title: "inner_peace",
+      quote: "peace_quote",
       durationSeconds: 5 * 60,
       primaryColor: const Color(0xFF00CED1), // Dark cyan
       secondaryColor: const Color(0xFF4682B4), // Steel blue
     ),
     QuickRitualType.protection: RitualData(
-      title: "Aura of Protection",
-      quote: "Visualize a shield of light surrounding you.",
+      title: "aura_protection",
+      quote: "protection_quote",
       durationSeconds: 2 * 60,
       primaryColor: const Color(0xFFB22222), // Firebrick red
       secondaryColor: const Color(0xFF8B0000), // Dark red
     ),
     QuickRitualType.sleep: RitualData(
-      title: "Restful Sleep",
-      quote: "Release your thoughts to the night sky.",
+      title: "restful_sleep",
+      quote: "sleep_quote",
       durationSeconds: 10 * 60,
       primaryColor: const Color(0xFF191970), // Midnight blue
       secondaryColor: const Color(0xFF483D8B), // Dark slate blue

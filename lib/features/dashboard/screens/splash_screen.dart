@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/star_field_overlay.dart';
-import 'onboarding_screen.dart';
+import '../../auth/widgets/auth_wrapper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -72,20 +74,25 @@ class _SplashScreenState extends State<SplashScreen>
 
     _entryController.forward();
 
-    // Navigate to onboarding
-    Future.delayed(const Duration(milliseconds: 4500), () {
+    // Restore session & navigate after splash animation
+    Future.delayed(const Duration(milliseconds: 4500), () async {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const OnboardingScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-            transitionDuration: const Duration(milliseconds: 1200),
-          ),
-        );
+        // Restore any saved login session
+        await context.read<AuthProvider>().tryRestoreSession();
+
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const AuthWrapper(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 1200),
+            ),
+          );
+        }
       }
     });
   }
@@ -127,8 +134,8 @@ class _SplashScreenState extends State<SplashScreen>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.luxuryGold.withOpacity(
-                            0.15 * _glowAnimation.value,
+                          color: AppColors.luxuryGold.withValues(
+                            alpha: 0.15 * _glowAnimation.value,
                           ),
                           blurRadius: 60 * _glowAnimation.value,
                           spreadRadius: 20 * _glowAnimation.value,
@@ -136,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ],
                       gradient: RadialGradient(
                         colors: [
-                          AppColors.luxuryGold.withOpacity(0.05),
+                          AppColors.luxuryGold.withValues(alpha: 0.05),
                           Colors.transparent,
                         ],
                       ),
@@ -167,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                           letterSpacing: 10,
                           shadows: [
                             Shadow(
-                              color: AppColors.luxuryGold.withOpacity(0.5),
+                              color: AppColors.luxuryGold.withValues(alpha: 0.5),
                               blurRadius: 15,
                               offset: const Offset(0, 5),
                             ),
@@ -182,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen>
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              AppColors.luxuryGold.withOpacity(0.5),
+                              AppColors.luxuryGold.withValues(alpha: 0.5),
                               Colors.transparent,
                             ],
                           ),

@@ -53,33 +53,14 @@ class _DeepMantraScaffoldState extends State<DeepMantraScaffold> with RouteAware
   }
 
   @override
-  void didPush() {
-    _updateOffset();
-  }
-
-  @override
-  void didPopNext() {
-    _updateOffset();
-  }
-
-  void _updateOffset() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        final offset = widget.bottomNavigationBar != null 
-            ? AppSizes.bottomNavBarHeight 
-            : 0.0;
-        context.read<MiniPlayerProvider>().setBottomOffset(offset);
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: false,
       backgroundColor: widget.backgroundColor,
       appBar: widget.appBar,
-      body: Consumer4<
+      body: widget.body,
+      floatingActionButton: widget.floatingActionButton,
+      bottomNavigationBar: Consumer4<
         AudioPlayerProvider,
         AudioChantProvider,
         PracticeSessionProvider,
@@ -89,26 +70,24 @@ class _DeepMantraScaffoldState extends State<DeepMantraScaffold> with RouteAware
           final bool isPlayerVisible = widget.showMiniPlayer && 
               miniPlayer.showMiniPlayer(audio, chant, practice);
 
-          // Calculate padding ONLY for the mini player.
-          // The Scaffold already handles the BottomNavigationBar layout since extendBody is false.
-          final double bottomPadding = isPlayerVisible 
-              ? AppSizes.miniPlayerHeight + 4.h 
-              : 0;
+          if (!isPlayerVisible && widget.bottomNavigationBar == null) {
+            return const SizedBox.shrink();
+          }
 
-          return Padding(
-            padding: EdgeInsets.only(bottom: bottomPadding),
-            child: widget.body,
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isPlayerVisible)
+                Padding(
+                  padding: EdgeInsets.only(bottom: 8.h),
+                  child: const DeepMantraMiniPlayer(),
+                ),
+              if (widget.bottomNavigationBar != null)
+                widget.bottomNavigationBar!,
+            ],
           );
         },
       ),
-      floatingActionButton: widget.floatingActionButton,
-      bottomNavigationBar: widget.bottomNavigationBar != null
-          ? SafeArea(
-              top: false,
-              bottom: false, // Scaffold handles bottom safety with BottomNavigationBar
-              child: widget.bottomNavigationBar!,
-            )
-          : null,
     );
   }
 }

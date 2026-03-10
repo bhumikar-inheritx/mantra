@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/models/mantra_model.dart';
+import '../../../localization/app_localizations.dart';
 import '../../../shared/dialogs/sankalp_dialog.dart';
 import '../../../shared/providers/audio_player_provider.dart';
 import '../../../shared/providers/muhurta_provider.dart';
@@ -20,6 +21,7 @@ class MantraSelectionBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final muhurta = Provider.of<MuhurtaProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 600),
@@ -124,7 +126,7 @@ class MantraSelectionBottomSheet extends StatelessWidget {
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 12.w),
                             child: Text(
-                              mantra.deity,
+                              l10n.translate(mantra.deity.toLowerCase()),
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
@@ -147,7 +149,7 @@ class MantraSelectionBottomSheet extends StatelessWidget {
                       Text(
                         mantra.meaning.isNotEmpty
                             ? mantra.meaning
-                            : "Powerful mantra for peace, meditation, and connecting with divine energy.",
+                            : l10n.translate("mantra_description_fallback"),
                         textAlign: TextAlign.center,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
@@ -164,7 +166,7 @@ class MantraSelectionBottomSheet extends StatelessWidget {
 
                       // 3. Stacked Premium Buttons
                       _buildPremiumButton(
-                        label: "Start Practice",
+                        label: l10n.translate("start_practice"),
                         icon: Icons.self_improvement_rounded,
                         isPrimary: true,
                         muhurta: muhurta,
@@ -196,7 +198,7 @@ class MantraSelectionBottomSheet extends StatelessWidget {
                       SizedBox(height: 16.h),
 
                       _buildPremiumButton(
-                        label: "Listen Normally",
+                        label: l10n.translate("listen_normally"),
                         icon: Icons.headphones_rounded,
                         isPrimary: false,
                         muhurta: muhurta,
