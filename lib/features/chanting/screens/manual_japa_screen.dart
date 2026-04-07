@@ -28,6 +28,7 @@ class _ManualJapaScreenState extends State<ManualJapaScreen> {
       final session = context.read<PracticeSessionProvider>();
       final manual = context.read<ManualJapaProvider>();
       session.startSession();
+      session.resumeTimer();
       manual.initialize(session.targetCount);
     });
   }

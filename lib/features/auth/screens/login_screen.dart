@@ -39,9 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text.trim(),
       );
 
-      if (success && mounted) {
-        // Navigation will be handled by AuthWrapper in main.dart
-      } else if (mounted) {
+      if (!success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(auth.errorMessage ?? "Authentication failed"),
@@ -50,6 +48,93 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     }
+  }
+
+  void _handleGoogleSignIn() async {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final success = await auth.signInWithGoogle();
+
+    if (!success && mounted && auth.errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(auth.errorMessage!),
+          backgroundColor: AppColors.sacredRed,
+        ),
+      );
+    }
+  }
+
+  void _showForgotPasswordDialog() {
+    final emailController = TextEditingController(text: _emailController.text);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(
+          "Reset Your Path",
+          style: GoogleFonts.playfairDisplay(
+            fontWeight: FontWeight.bold,
+            color: AppColors.ancientBrown,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Enter your email to receive a password reset link.",
+              style: TextStyle(color: AppColors.earthyGrey),
+            ),
+            SizedBox(height: 20.h),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                hintText: "Email",
+                prefixIcon: const Icon(Icons.email_outlined, color: AppColors.templeGold),
+                filled: true,
+                fillColor: AppColors.earthyGrey.withValues(alpha: 0.05),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL", style: TextStyle(color: AppColors.earthyGrey)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = emailController.text.trim();
+              if (email.isNotEmpty) {
+                final auth = Provider.of<AuthProvider>(context, listen: false);
+                final success = await auth.sendPasswordResetEmail(email);
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? "Reset link sent to $email"
+                            : (auth.errorMessage ?? "Failed to send reset link"),
+                      ),
+                      backgroundColor: success ? AppColors.templeSaffron : AppColors.sacredRed,
+                    ),
+                  );
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.templeSaffron,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text("SEND RESET LINK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -76,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 60.h),
+                  SizedBox(height: 40.h),
                   // Logo / Spiritual Icon
                   Container(
                     padding: EdgeInsets.all(20.w),
@@ -86,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: Icon(
                       Icons.self_improvement,
-                      size: 80.w,
+                      size: 60.w,
                       color: AppColors.templeSaffron,
                     ),
                   ),
@@ -107,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColors.earthyGrey,
                     ),
                   ),
-                  SizedBox(height: 60.h),
+                  SizedBox(height: 40.h),
 
                   // Email Field
                   _buildTextField(
@@ -161,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: _showForgotPasswordDialog,
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
@@ -171,42 +256,79 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40.h),
+                  SizedBox(height: 32.h),
 
                   // Login Button
                   Consumer<AuthProvider>(
                     builder: (context, auth, _) {
-                      return SizedBox(
-                        width: double.infinity,
-                        height: 54.h,
-                        child: ElevatedButton(
-                          onPressed: auth.isLoading ? null : _handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.templeSaffron,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppSizes.radiusMd,
-                              ),
-                            ),
-                            elevation: 8,
-                            shadowColor: AppColors.templeSaffron.withValues(
-                              alpha: 0.4,
-                            ),
-                          ),
-                          child: auth.isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : Text(
-                                  "ENTER THE SANCTUM",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
+                      return Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 54.h,
+                            child: ElevatedButton(
+                              onPressed: auth.isLoading ? null : _handleLogin,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.templeSaffron,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    AppSizes.radiusMd,
                                   ),
                                 ),
-                        ),
+                                elevation: 8,
+                                shadowColor: AppColors.templeSaffron.withValues(
+                                  alpha: 0.4,
+                                ),
+                              ),
+                              child: auth.isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : Text(
+                                      "ENTER THE SANCTUM",
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          SizedBox(height: 24.h),
+                          
+                          // Google Sign-In
+                          Text(
+                            "OR CONTINUE WITH",
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: AppColors.earthyGrey,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                          
+                          SizedBox(
+                            width: double.infinity,
+                            height: 54.h,
+                            child: OutlinedButton.icon(
+                              onPressed: auth.isLoading ? null : _handleGoogleSignIn,
+                              icon: Image.asset(
+                                'assets/icons/google_logo.png', // Assuming logo exists or using icon
+                                height: 24.w,
+                                errorBuilder: (context, error, stackTrace) => 
+                                  const Icon(Icons.g_mobiledata, size: 32, color: Colors.blue),
+                              ),
+                              label: const Text("Google Account"),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: AppColors.templeGold),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),

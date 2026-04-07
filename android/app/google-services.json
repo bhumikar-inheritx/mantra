@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1008209446719",
+    "project_id": "deep-mantra",
+    "storage_bucket": "deep-mantra.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008209446719:android:69cde8d01387916155f58a",
+        "android_client_info": {
+          "package_name": "com.deepmantra.deepMantra"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1008209446719-8ck8s6dvn8l0fmq6tarkjgnrmlbekffr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.deepmantra.deepMantra",
+            "certificate_hash": "c6f2778d76128522cccfde11d4ae0da164107507"
+          }
+        },
+        {
+          "client_id": "1008209446719-3e1n2tai0bne66130dq71gt9osa7as2m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8PR9UuHOn9S9ioTEHw1Y-2-g4C2A5J6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1008209446719-3e1n2tai0bne66130dq71gt9osa7as2m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1008209446719-a3nfqjme8j1s84c7u6e22c0kvir6pbqv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.deepmantra.deepMantra"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -47,8 +47,20 @@ class PracticeSessionProvider extends ChangeNotifier {
     _sessionStartTime = DateTime.now();
     _isSessionActive = true;
     _sessionDuration = Duration.zero;
-    _startTimer();
+    // Don't start timer immediately, wait for audio to play
     notifyListeners();
+  }
+
+  void pauseTimer() {
+    _timer?.cancel();
+    _timer = null;
+    notifyListeners();
+  }
+
+  void resumeTimer() {
+    if (_isSessionActive && (_timer == null || !_timer!.isActive)) {
+      _startTimer();
+    }
   }
 
   void _startTimer() {
@@ -62,6 +74,7 @@ class PracticeSessionProvider extends ChangeNotifier {
   void completeSession(BuildContext context, int totalChants) {
     _isSessionActive = false;
     _timer?.cancel();
+    _timer = null;
     
     // Save to dashboard
     context.read<DashboardProvider>().addChantsForToday(totalChants);
@@ -74,6 +87,7 @@ class PracticeSessionProvider extends ChangeNotifier {
     _sessionStartTime = null;
     _sessionDuration = Duration.zero;
     _timer?.cancel();
+    _timer = null;
     notifyListeners();
   }
 

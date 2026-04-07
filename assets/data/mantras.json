@@ -9,7 +9,7 @@
         "meaning": "Panchakshara Mantra representing the five elements and the inner self.",
         "benefits": "Mental peace, clarity, and spiritual protection.",
         "imageUrl": "assets/images/shiva.jpg",
-        "audioUrl": "assets/audio/shiv_mantra/Om Namah Shivaya.mp3",
+        "audioUrl": "assets/audio/shiv_mantra/om_namah_shivaya.mp3",
         "category": "Protection",
         "chakras": [
             "Heart",
@@ -39,7 +39,7 @@
         "meaning": "Vedic prayer for spiritual awakening and wisdom.",
         "benefits": "Intellectual growth, radiance, and purity.",
         "imageUrl": "assets/images/gayatri.jpg",
-        "audioUrl": "assets/audio/gayatri_mantra/Gayatri Mantra.mp3",
+        "audioUrl": "assets/audio/gayatri_mantra/gayatri_mantra.mp3",
         "category": "Wisdom",
         "chakras": [
             "Third Eye",
@@ -68,7 +68,7 @@
         "meaning": "Invocation to Lord Ganesha to remove all hurdles.",
         "benefits": "Success in new ventures, wisdom, and prosperity.",
         "imageUrl": "assets/images/ganesha.png",
-        "audioUrl": "assets/audio/ganesha_mantra/Om Gam Ganapataye Namaha.mp3",
+        "audioUrl": "assets/audio/ganesha_mantra/om_gam_ganapataye_namaha.mp3",
         "category": "Wealth",
         "chakras": [
             "Root"
@@ -95,7 +95,7 @@
         "meaning": "Mantra for attracting abundance and material prosperity.",
         "benefits": "Wealth, beauty, and good fortune.",
         "imageUrl": "assets/images/lakshmi.png",
-        "audioUrl": "assets/audio/lakshmi_mantra/Om Mahalaxmi Namo Namah.mp3",
+        "audioUrl": "assets/audio/lakshmi_mantra/om_mahalaxmi_namo_namah.mp3",
         "category": "Wealth",
         "chakras": [
             "Solar Plexus"
@@ -123,7 +123,7 @@
         "meaning": "The ultimate mantra for spiritual liberation and love.",
         "benefits": "Inner joy, divine connection, and stress relief.",
         "imageUrl": "assets/images/krishna.png",
-        "audioUrl": "assets/audio/krishna_mantra/Om Krishnaya Vasudevaya.mp3",
+        "audioUrl": "assets/audio/krishna_mantra/om_krishnaya_vasudevaya.mp3",
         "category": "Harmony",
         "chakras": [
             "Heart"
@@ -151,7 +151,7 @@
         "meaning": "The great death-conquering mantra for longevity.",
         "benefits": "Health, vitality, and protection from ailments.",
         "imageUrl": "assets/images/shiva.jpg",
-        "audioUrl": "assets/audio/shiv_mantra/Maha Mrityunjaya.mp3",
+        "audioUrl": "assets/audio/shiv_mantra/maha_mrityunjaya.mp3",
         "category": "Health",
         "chakras": [
             "Crown",
@@ -181,7 +181,7 @@
         "meaning": "Prayer to Lord Ganesha to remove obstacles and bless with wisdom.",
         "benefits": "Success, wisdom, and removal of obstacles.",
         "imageUrl": "assets/images/ganesha.png",
-        "audioUrl": "assets/audio/ganesha_mantra/Vakratunda Mahakaya.mp3",
+        "audioUrl": "assets/audio/ganesha_mantra/vakratunda_mahakaya.mp3",
         "category": "Wealth",
         "chakras": [
             "Root"
@@ -208,7 +208,7 @@
         "meaning": "Invocation to Lord Kuber and Goddess Lakshmi for prosperity.",
         "benefits": "Wealth, abundance, and prosperity.",
         "imageUrl": "assets/images/lakshmi.png",
-        "audioUrl": "assets/audio/lakshmi_mantra/Kuber ashtlakshmi.mp3",
+        "audioUrl": "assets/audio/lakshmi_mantra/kuber_ashtlakshmi.mp3",
         "category": "Wealth",
         "chakras": [
             "Solar Plexus"
@@ -225,5 +225,14 @@
         ],
         "trackType": "Mantra",
         "usageType": "jaapSupported"
+    },
+    {
+        "id": "15",
+        "title": "Vishnu Mantra",
+        "titleHindi": "ॐ नमो भगवते वासुदेवाय",
+        "audioUrl": "assets/audio/vishnu_mantra/om_namo_bhagavate_vasudevaya.mp3",
+        "category": "Harmony",
+        "deity": "Vishnu",
+        "trackType": "Mantra"
     }
 ]

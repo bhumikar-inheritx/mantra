@@ -23,14 +23,43 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
   @override
   void initState() {
     super.initState();
+    _initAudioSync();
+  }
+
+  void _initAudioSync() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      
       final session = context.read<PracticeSessionProvider>();
       final audio = context.read<AudioChantProvider>();
+      
       if (session.selectedMantra != null) {
         session.startSession();
         audio.initialize(session.selectedMantra!.audioUrl, session.targetCount);
       }
+
+      // Add listener to sync timer with audio playback
+      audio.addListener(_onAudioStateChanged);
     });
+  }
+
+  void _onAudioStateChanged() {
+    if (!mounted) return;
+    final audio = context.read<AudioChantProvider>();
+    final session = context.read<PracticeSessionProvider>();
+
+    if (audio.isPlaying) {
+      session.resumeTimer();
+    } else {
+      session.pauseTimer();
+    }
+  }
+
+  @override
+  void dispose() {
+    // Remove listener to prevent memory leaks
+    context.read<AudioChantProvider>().removeListener(_onAudioStateChanged);
+    super.dispose();
   }
 
   @override

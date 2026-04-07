@@ -1,4 +1,4 @@
-package com.deepmantra.deep_mantra
+package com.deepmantra.deepMantra
 
 import io.flutter.embedding.android.FlutterActivity
 

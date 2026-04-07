@@ -15,7 +15,23 @@ class AuthProvider extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
   String? get errorMessage => _errorMessage;
 
-  /// Call this once at app startup to restore any saved session.
+  AuthProvider() {
+    _init();
+  }
+
+  void _init() {
+    _authService.authStateChanges.listen((firebaseUser) async {
+      if (firebaseUser == null) {
+        _user = null;
+      } else {
+        _user = await _authService.restoreSession();
+      }
+      _isInitialized = true;
+      notifyListeners();
+    });
+  }
+
+  /// Call this once at app startup if needed, but the listener usually handles it.
   Future<void> tryRestoreSession() async {
     _isLoading = true;
     notifyListeners();
@@ -56,6 +72,42 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       _user = await _authService.signup(name, email, password);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> signInWithGoogle() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _user = await _authService.signInWithGoogle();
+      _isLoading = false;
+      notifyListeners();
+      return _user != null;
+    } catch (e) {
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> sendPasswordResetEmail(String email) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _authService.sendPasswordResetEmail(email);
       _isLoading = false;
       notifyListeners();
       return true;

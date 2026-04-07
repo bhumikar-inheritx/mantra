@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1008209446719-a3nfqjme8j1s84c7u6e22c0kvir6pbqv.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1008209446719-a3nfqjme8j1s84c7u6e22c0kvir6pbqv</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1008209446719-8ck8s6dvn8l0fmq6tarkjgnrmlbekffr.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAmhY0ZY1f6BYJRbrqbjK1WNucX_yVQwpU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1008209446719</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.deepmantra.deepMantra</string>
+	<key>PROJECT_ID</key>
+	<string>deep-mantra</string>
+	<key>STORAGE_BUCKET</key>
+	<string>deep-mantra.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1008209446719:ios:a993a1a14ccea54155f58a</string>
+</dict>
+</plist>

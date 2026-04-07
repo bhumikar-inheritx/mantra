@@ -8,6 +8,8 @@ import '../../../core/theme/app_sizes.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../localization/app_localizations.dart';
 import '../../../shared/providers/muhurta_provider.dart';
+import '../../alarm/screens/alarm_settings_screen.dart';
+import '../../mantra/providers/mantra_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -69,6 +71,38 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 40.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSizes.paddingLg),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.read<MantraProvider>().loadMantras();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AlarmSettingsScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.alarm, color: Colors.white),
+                  label: const Text(
+                    "SET SPIRITUAL ALARM",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: muhurta.accentColor,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
             Padding(
               padding: EdgeInsets.all(AppSizes.paddingLg),
               child: SizedBox(

@@ -1,123 +1,137 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/user_model.dart';
 
-/// Mock authentication service.
-///
-/// Registered users are stored in a static in-memory map so they survive
-/// provider rebuilds within a single app session. Session persistence via
-/// SharedPreferences is optional – if the plugin fails, the app continues
-/// to work without persistent sessions.
 class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  
   static const String _sessionKey = 'current_session';
 
-  // ── In-memory user registry (survives within app session) ──
-  // Key = email, Value = { name, password, id }
-  static final Map<String, Map<String, String>> _registeredUsers = {};
+  /// Stream of authentication state changes.
+  Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // ── Session persistence helpers (safe – never crashes) ──
-  Future<SharedPreferences?> _tryGetPrefs() async {
-    try {
-      return await SharedPreferences.getInstance();
-    } catch (e) {
-      debugPrint('SharedPreferences unavailable: $e');
-      return null;
-    }
-  }
-
-  Future<void> _trySaveSession(UserModel user) async {
-    try {
-      final prefs = await _tryGetPrefs();
-      await prefs?.setString(_sessionKey, jsonEncode(user.toJson()));
-    } catch (e) {
-      debugPrint('Failed to save session: $e');
-    }
-  }
-
-  Future<void> _tryClearSession() async {
-    try {
-      final prefs = await _tryGetPrefs();
-      await prefs?.remove(_sessionKey);
-    } catch (e) {
-      debugPrint('Failed to clear session: $e');
-    }
-  }
-
-  // ── Public API ──
+  /// Get current user.
+  User? get currentUser => _auth.currentUser;
 
   /// Login with email and password.
   Future<UserModel> login(String email, String password) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    final userData = _registeredUsers[email.toLowerCase()];
-    if (userData != null && userData['password'] == password) {
-      final user = UserModel(
-        id: userData['id']!,
-        email: email.toLowerCase(),
-        name: userData['name']!,
-        isNewUser: false,
+    try {
+      final UserCredential credential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-      await _trySaveSession(user);
-      return user;
+      
+      return _mapFirebaseUserToModel(credential.user!, isNewUser: false);
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
     }
-
-    throw Exception("Invalid email or password");
   }
 
   /// Register a new user.
   Future<UserModel> signup(String name, String email, String password) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    final lowerEmail = email.toLowerCase();
-
-    if (_registeredUsers.containsKey(lowerEmail)) {
-      throw Exception("An account with this email already exists");
-    }
-
-    final userId = DateTime.now().millisecondsSinceEpoch.toString();
-
-    // Store in memory
-    _registeredUsers[lowerEmail] = {
-      'id': userId,
-      'name': name,
-      'password': password,
-    };
-
-    final user = UserModel(
-      id: userId,
-      email: lowerEmail,
-      name: name,
-      isNewUser: true,
-    );
-
-    await _trySaveSession(user);
-    return user;
-  }
-
-  /// Logout – clear session.
-  Future<void> logout() async {
-    await _tryClearSession();
-  }
-
-  /// Try to restore a saved session from SharedPreferences.
-  Future<UserModel?> restoreSession() async {
     try {
-      final prefs = await _tryGetPrefs();
-      final sessionJson = prefs?.getString(_sessionKey);
-      if (sessionJson != null) {
-        final data = jsonDecode(sessionJson) as Map<String, dynamic>;
-        return UserModel.fromJson(data);
-      }
+      final UserCredential credential = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Update display name
+      await credential.user?.updateDisplayName(name);
+      
+      return _mapFirebaseUserToModel(credential.user!, isNewUser: true);
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    }
+  }
+
+  /// Sign in with Google.
+  Future<UserModel?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+      
+      return _mapFirebaseUserToModel(userCredential.user!, isNewUser: isNewUser);
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
     } catch (e) {
-      debugPrint('Failed to restore session: $e');
+      throw Exception("Google Sign-In failed: $e");
+    }
+  }
+
+  /// Send password reset email.
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    }
+  }
+
+  /// Logout.
+  Future<void> logout() async {
+    await _auth.signOut();
+    await _googleSignIn.signOut();
+    
+    // Also clear legacy session if any
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_sessionKey);
+  }
+
+  /// Restore session (using Firebase's built-in persistence).
+  Future<UserModel?> restoreSession() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      return _mapFirebaseUserToModel(user, isNewUser: false);
     }
     return null;
   }
 
-  /// Update session (e.g. after completing onboarding).
+  /// Update session metadata (placeholder for future Firestore integration).
   Future<void> updateSession(UserModel user) async {
-    await _trySaveSession(user);
+    // Firebase Auth handles this mostly. This could update Firestore user doc.
+  }
+
+  /// Map Firebase User to App UserModel.
+  UserModel _mapFirebaseUserToModel(User user, {required bool isNewUser}) {
+    return UserModel(
+      id: user.uid,
+      email: user.email ?? "",
+      name: user.displayName ?? "Sacred Soul",
+      isNewUser: isNewUser,
+    );
+  }
+
+  /// Handle Firebase Auth specific errors.
+  Exception _handleAuthException(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        return Exception("The email address is badly formatted.");
+      case 'user-not-found':
+        return Exception("No user found with this email.");
+      case 'wrong-password':
+        return Exception("Incorrect password. Please try again.");
+      case 'email-already-in-use':
+        return Exception("An account already exists for this email.");
+      case 'weak-password':
+        return Exception("The password is too weak.");
+      case 'user-disabled':
+        return Exception("This user has been disabled.");
+      case 'operation-not-allowed':
+        return Exception("Operation not allowed.");
+      default:
+        return Exception(e.message ?? "An unknown authentication error occurred.");
+    }
   }
 }

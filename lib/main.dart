@@ -1,10 +1,13 @@
+import 'package:alarm/alarm.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:deep_mantra/shared/providers/sankalp_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
+import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 
 import 'features/chanting/providers/audio_chant_provider.dart';
@@ -20,6 +23,7 @@ import 'features/dashboard/screens/splash_screen.dart';
 import 'features/dashboard/widgets/global_player_wrapper.dart';
 import 'features/mantra/providers/mantra_provider.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/providers/alarm_provider.dart';
 import 'localization/app_localizations.dart';
 import 'localization/locale_provider.dart';
 import 'shared/providers/audio_player_provider.dart';
@@ -33,6 +37,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await Alarm.init();
 
   // Configure Audio Session for low-latency and proper background handling
   try {
@@ -75,6 +83,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AlarmProvider()),
         ChangeNotifierProvider(
           create: (context) => AudioPlayerProvider(globalAudioService),
         ),
