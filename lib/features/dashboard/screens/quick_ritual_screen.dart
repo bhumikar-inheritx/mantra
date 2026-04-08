@@ -63,8 +63,8 @@ class _QuickRitualScreenState extends State<QuickRitualScreen>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark, // For iOS
+        statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+        statusBarBrightness: Brightness.light, // For iOS (dark icons)
       ),
       child: Scaffold(
         backgroundColor: data.primaryColor.withValues(alpha: 0.1),

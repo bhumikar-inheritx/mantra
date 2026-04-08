@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
+import '../../../data/models/mantra_model.dart';
+import '../../../shared/services/local_artwork_resolver.dart';
 import '../services/audio_player_service.dart';
 
 class AudioChantProvider extends ChangeNotifier {
@@ -39,13 +41,14 @@ class AudioChantProvider extends ChangeNotifier {
     _lastCommandTime = DateTime.now();
   }
 
-  Future<void> initialize(String url, int target) async {
+  Future<void> initialize(MantraModel mantra, int target) async {
     // Clear old subscriptions
     for (var sub in _subscriptions) {
       sub.cancel();
     }
     _subscriptions.clear();
 
+    final url = mantra.audioUrl;
     _targetCount = target;
     _currentCount = 0;
     _progressPercentage = 0.0;
@@ -53,19 +56,32 @@ class AudioChantProvider extends ChangeNotifier {
 
     final bool isJustListen = target <= 0;
 
+    final artUri = await LocalArtworkResolver.resolve(
+      mantra.imageUrl,
+      cacheKey: mantra.id,
+    );
+    final mediaItem = MediaItem(
+      id: mantra.id,
+      album: mantra.category,
+      title: mantra.title,
+      artist: 'Deep Mantra',
+      artUri: artUri,
+    );
+    debugPrint('Background Audio MediaItem: ${mediaItem.title}, ArtUri: ${mediaItem.artUri}');
+
     AudioSource source;
     if (isJustListen) {
       source = url.startsWith('assets/')
-          ? AudioSource.asset(url)
-          : AudioSource.uri(Uri.parse(url));
+          ? AudioSource.asset(url, tag: mediaItem)
+          : AudioSource.uri(Uri.parse(url), tag: mediaItem);
     } else {
       source = ConcatenatingAudioSource(
         useLazyPreparation: true,
         children: List.generate(
           target,
           (_) => url.startsWith('assets/')
-              ? AudioSource.asset(url)
-              : AudioSource.uri(Uri.parse(url)),
+              ? AudioSource.asset(url, tag: mediaItem)
+              : AudioSource.uri(Uri.parse(url), tag: mediaItem),
         ),
       );
     }
@@ -174,7 +190,7 @@ class AudioChantProvider extends ChangeNotifier {
     _isPlaying = false;
     _currentCount = 0;
     _progressPercentage = 0.0;
-    
+
     // Clear subscriptions to prevent trailing stream events (e.g. from currentIndexStream)
     // from incorrectly updating _currentCount or _isPlaying after stop is called.
     for (var sub in _subscriptions) {

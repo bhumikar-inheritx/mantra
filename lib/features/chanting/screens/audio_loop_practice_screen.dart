@@ -35,7 +35,7 @@ class _AudioLoopPracticeScreenState extends State<AudioLoopPracticeScreen> {
       
       if (session.selectedMantra != null) {
         session.startSession();
-        audio.initialize(session.selectedMantra!.audioUrl, session.targetCount);
+        audio.initialize(session.selectedMantra!, session.targetCount);
       }
 
       // Add listener to sync timer with audio playback

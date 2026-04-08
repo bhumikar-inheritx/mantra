@@ -1,20 +1,24 @@
+import 'dart:async';
 import 'package:alarm/alarm.dart';
 import 'package:audio_session/audio_session.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:deep_mantra/shared/providers/sankalp_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-import 'firebase_options.dart';
+import 'core/providers/alarm_provider.dart';
+import 'core/providers/auth_provider.dart';
 import 'core/theme/app_theme.dart';
-
 import 'features/chanting/providers/audio_chant_provider.dart';
 import 'features/chanting/providers/manual_japa_provider.dart';
 import 'features/chanting/providers/practice_session_provider.dart';
 import 'features/chanting/services/audio_player_service.dart';
 import 'features/chanting/services/haptic_service.dart';
+import 'features/alarm/screens/alarm_ring_screen.dart';
 import 'features/dashboard/providers/dashboard_provider.dart';
 import 'features/dashboard/providers/mini_player_provider.dart';
 import 'features/dashboard/providers/onboarding_provider.dart';
@@ -22,45 +26,50 @@ import 'features/dashboard/providers/quick_ritual_provider.dart';
 import 'features/dashboard/screens/splash_screen.dart';
 import 'features/dashboard/widgets/global_player_wrapper.dart';
 import 'features/mantra/providers/mantra_provider.dart';
-import 'core/providers/auth_provider.dart';
-import 'core/providers/alarm_provider.dart';
+import 'firebase_options.dart';
 import 'localization/app_localizations.dart';
 import 'localization/locale_provider.dart';
 import 'shared/providers/audio_player_provider.dart';
-import 'shared/services/global_audio_player_service.dart';
 import 'shared/providers/muhurta_provider.dart';
+import 'shared/services/global_audio_player_service.dart';
 
-import 'package:flutter/services.dart';
-
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Alarm.init();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+    androidNotificationIcon: 'mipmap/ic_launcher',
+  );
 
   // Configure Audio Session for low-latency and proper background handling
   try {
     final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.duckOthers |
-          AVAudioSessionCategoryOptions.allowBluetooth,
-      avAudioSessionMode: AVAudioSessionMode.defaultMode,
-      androidAudioAttributes: const AndroidAudioAttributes(
-        contentType: AndroidAudioContentType.music,
-        flags: AndroidAudioFlags.none,
-        usage: AndroidAudioUsage.media,
+    await session.configure(
+      AudioSessionConfiguration(
+        avAudioSessionCategory: AVAudioSessionCategory.playback,
+        avAudioSessionCategoryOptions:
+            AVAudioSessionCategoryOptions.duckOthers |
+            AVAudioSessionCategoryOptions.allowBluetooth,
+        avAudioSessionMode: AVAudioSessionMode.defaultMode,
+        androidAudioAttributes: const AndroidAudioAttributes(
+          contentType: AndroidAudioContentType.music,
+          flags: AndroidAudioFlags.none,
+          usage: AndroidAudioUsage.media,
+        ),
+        androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
       ),
-      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-    ));
+    );
   } catch (e) {
     debugPrint('AudioSession configuration failed: $e');
   }
-  
+
   // Lock orientation to portrait only
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -68,14 +77,24 @@ void main() async {
   ]);
 
   // Ensure status bar and bottom navigation are visible
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
-    SystemUiOverlay.top,
-    SystemUiOverlay.bottom,
-  ]);
+  await SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+  );
+
+  // Global status bar style for black icons (time, battery %, etc.)
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+      statusBarBrightness: Brightness.light, // For iOS (dark icons)
+    ),
+  );
 
   // Initialise services
   final globalAudioService = GlobalAudioPlayerService();
-  final chantAudioService = AudioPlayerService(); // Separate instance for chanting
+  final chantAudioService =
+      AudioPlayerService(); // Separate instance for chanting
   final hapticService = HapticService();
 
   runApp(
@@ -109,8 +128,36 @@ void main() async {
   );
 }
 
-class DeepMantraApp extends StatelessWidget {
+class DeepMantraApp extends StatefulWidget {
   const DeepMantraApp({super.key});
+
+  @override
+  State<DeepMantraApp> createState() => _DeepMantraAppState();
+}
+
+class _DeepMantraAppState extends State<DeepMantraApp> {
+  StreamSubscription<AlarmSettings>? _alarmSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen for alarms ringing (useful when app is foregrounded or woken via full-screen intent)
+    _alarmSubscription = Alarm.ringStream.stream.listen((alarmSettings) {
+      if (navigatorKey.currentState != null) {
+        navigatorKey.currentState!.push(
+          MaterialPageRoute(
+            builder: (context) => AlarmRingScreen(alarmSettings: alarmSettings),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _alarmSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

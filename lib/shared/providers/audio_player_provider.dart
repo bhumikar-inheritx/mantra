@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 
 import '../../data/models/mantra_model.dart';
 import '../services/global_audio_player_service.dart';
@@ -46,7 +46,7 @@ class AudioPlayerProvider extends ChangeNotifier {
     // Listen to player state for UI state.
     _audioService.playerStateStream.listen((state) {
       if (_isGuarded()) return;
-      final playing = state == PlayerState.playing;
+      final playing = state.playing;
       if (_isPlaying != playing) {
         _isPlaying = playing;
         notifyListeners();
@@ -68,15 +68,13 @@ class AudioPlayerProvider extends ChangeNotifier {
       final isSameTrack =
           _currentTrack?.audioUrl == track.audioUrl &&
           _loadedUrl == track.audioUrl;
-      final playerState = _audioService.rawPlayer.state;
+      final processingState = _audioService.rawPlayer.processingState;
 
       // If the underlying player has completed or been fully stopped,
       // we must reload the source even if it's the same mantra, otherwise
       // Android's MediaPlayer will silently refuse to start again.
       final shouldReload =
-          !isSameTrack ||
-          playerState == PlayerState.completed ||
-          playerState == PlayerState.stopped;
+          !isSameTrack || processingState == ProcessingState.completed;
 
       // Optimistically update UI immediately
       _updateCommandTime();
@@ -90,7 +88,7 @@ class AudioPlayerProvider extends ChangeNotifier {
         _loadedUrl = null;
 
         // Load (or reload) the source
-        await _audioService.setSource(track.audioUrl);
+        await _audioService.setSource(track);
         _loadedUrl = track.audioUrl;
       }
 
@@ -113,12 +111,10 @@ class AudioPlayerProvider extends ChangeNotifier {
   Future<void> playUrl(String url) async {
     try {
       final isSameUrl = _loadedUrl == url;
-      final playerState = _audioService.rawPlayer.state;
+      final processingState = _audioService.rawPlayer.processingState;
 
       final shouldReload =
-          !isSameUrl ||
-          playerState == PlayerState.completed ||
-          playerState == PlayerState.stopped;
+          !isSameUrl || processingState == ProcessingState.completed;
 
       _updateCommandTime();
       _isPlaying = true;
@@ -127,7 +123,7 @@ class AudioPlayerProvider extends ChangeNotifier {
       if (shouldReload) {
         await _audioService.stop();
         _loadedUrl = null;
-        await _audioService.setSource(url);
+        await _audioService.setUrlSource(url);
         _loadedUrl = url;
       }
 
@@ -160,7 +156,7 @@ class AudioPlayerProvider extends ChangeNotifier {
       if (!isSameTrack) {
         await _audioService.stop();
         _loadedUrl = null;
-        await _audioService.setSource(track.audioUrl);
+        await _audioService.setSource(track);
         _loadedUrl = track.audioUrl;
       }
 
@@ -183,7 +179,7 @@ class AudioPlayerProvider extends ChangeNotifier {
       if (!isSameUrl) {
         await _audioService.stop();
         _loadedUrl = null;
-        await _audioService.setSource(url);
+        await _audioService.setUrlSource(url);
         _loadedUrl = url;
       }
 
@@ -199,7 +195,6 @@ class AudioPlayerProvider extends ChangeNotifier {
     if (_currentTrack == null) return;
 
     final player = _audioService.rawPlayer;
-    final currentState = player.state;
     final targetState = !_isPlaying;
 
     // Immediately update UI
@@ -214,8 +209,7 @@ class AudioPlayerProvider extends ChangeNotifier {
       // If the player had fully completed or been stopped, do a clean
       // replay via playTrack so the source is reloaded and audio focus
       // is reacquired correctly on Android.
-      if (currentState == PlayerState.completed ||
-          currentState == PlayerState.stopped) {
+      if (player.processingState == ProcessingState.completed) {
         unawaited(playTrack(_currentTrack!));
         return;
       }
